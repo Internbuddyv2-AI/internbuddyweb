@@ -6,44 +6,123 @@ const fs = require('fs');
 const { OpenAI } = require('openai');
 
 dotenv.config();
+
 const app = express();
 
 /* -------------------- Config -------------------- */
+
 const PORT = process.env.PORT || 3000;
+const IS_VERCEL = !!process.env.VERCEL;
 
-// Public folder resolution (supports /public or ../public)
-const publicDirA = path.resolve(__dirname, 'public');
-const publicDirB = path.resolve(__dirname, '../public');
-const PUBLIC_DIR = fs.existsSync(publicDirA) ? publicDirA : publicDirB;
+/*
+  VERCEL IMPORTANT:
+  Best structure:
+  - server.js
+  - package.json
+  - public/
+      index.html
+      login.html
+      homepage.html
+      css/styles.css
+      script.js
+      interview.js
+      interview.css
+      interview-questions.json
+      coach.glb
 
-// Use Node 18+ fetch if available, fallback to node-fetch
+  If you keep HTML files in the root, this file will still try to serve them locally,
+  but for Vercel, putting frontend files in /public is cleaner.
+*/
+
+const publicDir = path.join(__dirname, 'public');
+const rootDir = __dirname;
+
+const PUBLIC_DIR = fs.existsSync(publicDir) ? publicDir : rootDir;
+
 const fetchFn = global.fetch
   ? global.fetch.bind(global)
   : (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 /* -------------------- Middleware -------------------- */
-app.disable('x-powered-by');
-app.use(cors());
-app.use(express.json({ limit: '2mb' }));
 
-// Serve static files
-app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
+app.disable('x-powered-by');
+
+app.use(cors({
+  origin: true,
+  credentials: false
+}));
+
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+/*
+  Local dev only.
+  On Vercel, static files should be served from /public by Vercel itself.
+*/
+if (!IS_VERCEL) {
+  app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
+}
 
 /* -------------------- OpenAI Client -------------------- */
-if (!process.env.OPENAI_API_KEY) {
-  console.warn('⚠️ OPENAI_API_KEY is missing. Set it in .env or your host env vars.');
+
+const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+
+if (!hasOpenAIKey) {
+  console.warn('OPENAI_API_KEY is missing. Add it in Vercel Environment Variables.');
 }
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const openai = hasOpenAIKey
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
+
+/* -------------------- Helpers -------------------- */
+
+function sendPage(res, filename) {
+  const filePath = path.join(PUBLIC_DIR, filename);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send(`Page not found: ${filename}`);
+  }
+
+  return res.sendFile(filePath);
+}
+
+function readJsonFile(filename) {
+  const possiblePaths = [
+    path.join(PUBLIC_DIR, filename),
+    path.join(rootDir, filename)
+  ];
+
+  const foundPath = possiblePaths.find(filePath => fs.existsSync(filePath));
+
+  if (!foundPath) {
+    throw new Error(`${filename} not found`);
+  }
+
+  return JSON.parse(fs.readFileSync(foundPath, 'utf8'));
+}
 
 /* -------------------- Health Check -------------------- */
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'InternBuddy backend running 🚀' });
+  res.json({
+    status: 'InternBuddy backend running',
+    environment: IS_VERCEL ? 'vercel' : 'local'
+  });
 });
 
 /* -------------------- Generate Search Query -------------------- */
+
 app.post('/api/generate-query', async (req, res) => {
   const { prompt } = req.body || {};
-  if (!prompt) return res.status(400).json({ error: 'Prompt required' });
+
+  if (!prompt) {
+    return res.status(400).json({ error: 'prompt_required' });
+  }
+
+  if (!openai) {
+    return res.status(500).json({ error: 'openai_api_key_missing' });
+  }
 
   try {
     const completion = await openai.chat.completions.create({
@@ -52,20 +131,26 @@ app.post('/api/generate-query', async (req, res) => {
       max_tokens: 80
     });
 
-    res.json({ query: completion.choices?.[0]?.message?.content?.trim() || '' });
+    res.json({
+      query: completion.choices?.[0]?.message?.content?.trim() || ''
+    });
   } catch (err) {
     console.error('Generate query error:', err);
     res.status(500).json({ error: 'query_generation_failed' });
   }
 });
 
-/* -------------------- Job Search (RapidAPI) -------------------- */
+/* -------------------- Job Search -------------------- */
+
 app.post('/api/search-jobs', async (req, res) => {
   const { query } = req.body || {};
-  if (!query) return res.status(400).json({ error: 'Query required' });
+
+  if (!query) {
+    return res.status(400).json({ error: 'query_required' });
+  }
 
   if (!process.env.RAPIDAPI_KEY) {
-    return res.status(500).json({ error: 'RAPIDAPI_KEY_missing' });
+    return res.status(500).json({ error: 'rapidapi_key_missing' });
   }
 
   try {
@@ -80,6 +165,12 @@ app.post('/api/search-jobs', async (req, res) => {
       }
     );
 
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('RapidAPI error:', response.status, text);
+      return res.status(500).json({ error: 'rapidapi_request_failed' });
+    }
+
     const data = await response.json();
     res.json(data.data || []);
   } catch (err) {
@@ -89,37 +180,45 @@ app.post('/api/search-jobs', async (req, res) => {
 });
 
 /* -------------------- Sponsor Jobs -------------------- */
+
 app.get('/api/sponsor-jobs', (req, res) => {
   try {
-    const jobsPath = path.join(__dirname, 'sponsor-jobs.json');
-    const jobs = JSON.parse(fs.readFileSync(jobsPath, 'utf8'));
+    const jobs = readJsonFile('sponsor-jobs.json');
     res.json(jobs);
   } catch (err) {
-    console.error('Sponsor jobs error:', err);
+    console.error('Sponsor jobs error:', err.message);
     res.status(500).json({ error: 'sponsor_jobs_unavailable' });
   }
 });
 
-/* -------------------- Interview Analysis (batch) -------------------- */
+/* -------------------- Interview Analysis Batch -------------------- */
+
 app.post('/api/analyze-interview', async (req, res) => {
   const { qa } = req.body || {};
-  if (!Array.isArray(qa)) return res.status(400).json({ error: 'qa array required' });
+
+  if (!Array.isArray(qa)) {
+    return res.status(400).json({ error: 'qa_array_required' });
+  }
+
+  if (!openai) {
+    return res.status(500).json({ error: 'openai_api_key_missing' });
+  }
 
   const formatted = qa
-    .map(
-      (item, i) =>
-        `${i + 1}. Q: ${item.question}\nA: ${item.answer || '(no answer)'}\nConfidence: ${item.confidence ?? 'N/A'}`
-    )
+    .map((item, i) => {
+      return `${i + 1}. Q: ${item.question}\nA: ${item.answer || '(no answer)'}\nConfidence: ${item.confidence ?? 'N/A'}`;
+    })
     .join('\n\n');
 
   const systemPrompt = `
 You are an expert interview coach.
 Return a JSON array where each item has:
-- score (0-100)
-- mistakes (array of short strings)
-- improvedAnswer (1-3 paragraphs)
-- tips (2-3 bullet points)
-Return strictly valid JSON.
+- score: number from 0 to 100
+- mistakes: array of short strings
+- improvedAnswer: 1 to 3 paragraphs
+- tips: 2 to 3 short strings
+
+Return strictly valid JSON only.
 `.trim();
 
   try {
@@ -137,11 +236,12 @@ Return strictly valid JSON.
     raw = raw.replace(/```json|```/g, '').trim();
 
     let parsed;
+
     try {
       parsed = JSON.parse(raw);
     } catch {
-      const match = raw.match(/(\[.*\])/s);
-      parsed = match ? JSON.parse(match[1]) : { raw };
+      const match = raw.match(/(\[[\s\S]*\])/);
+      parsed = match ? JSON.parse(match[1]) : [{ raw }];
     }
 
     res.json({ feedback: parsed });
@@ -151,22 +251,16 @@ Return strictly valid JSON.
   }
 });
 
-/* -------------------- Interview Question (seed bank, no repeats) -------------------- */
+/* -------------------- Interview Question -------------------- */
+
 app.post('/api/interview/question', (req, res) => {
   try {
     const { type, level, askedIds = [] } = req.body || {};
+
     const safeType = type || 'Behavioral';
     const safeLevel = level || 'Intern';
 
-    const seedPath = path.join(__dirname, 'interview-questions.json');
-    if (!fs.existsSync(seedPath)) {
-      return res.status(500).json({
-        error: 'questions_seed_missing',
-        message: 'Create interview-questions.json next to server.js'
-      });
-    }
-
-    const all = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+    const all = readJsonFile('interview-questions.json');
 
     const pool = all.filter(q =>
       q.type === safeType &&
@@ -180,37 +274,51 @@ app.post('/api/interview/question', (req, res) => {
     );
 
     const pickFrom = pool.length ? pool : fallbackPool;
-    if (!pickFrom.length) return res.json({ done: true, message: 'No more questions available.' });
+
+    if (!pickFrom.length) {
+      return res.json({
+        done: true,
+        message: 'No more questions available.'
+      });
+    }
 
     const picked = pickFrom[Math.floor(Math.random() * pickFrom.length)];
-    res.json({ done: false, question: picked });
+
+    res.json({
+      done: false,
+      question: picked
+    });
   } catch (err) {
     console.error('Question endpoint error:', err);
     res.status(500).json({ error: 'question_failed' });
   }
 });
 
-/* -------------------- Interview Feedback (single Q/A) -------------------- */
+/* -------------------- Interview Feedback Single Q/A -------------------- */
+
 app.post('/api/interview/feedback', async (req, res) => {
-  try {
-    const { question, answer, coachId, coachStyle } = req.body || {};
+  const { question, answer, coachId, coachStyle } = req.body || {};
 
-    const questionText =
-      typeof question === 'string'
-        ? question
-        : question?.text;
+  const questionText =
+    typeof question === 'string'
+      ? question
+      : question?.text;
 
-    if (!questionText || !answer) {
-      return res.status(400).json({ error: 'question_and_answer_required' });
-    }
+  if (!questionText || !answer) {
+    return res.status(400).json({ error: 'question_and_answer_required' });
+  }
 
-    const systemPrompt = `
+  if (!openai) {
+    return res.status(500).json({ error: 'openai_api_key_missing' });
+  }
+
+  const systemPrompt = `
 You are an expert interview coach.
 You MUST NOT invent facts. You can only improve the answer using the user's content.
 
 Return STRICT JSON with:
 {
-  "score": number (0-100),
+  "score": number,
   "strengths": string[],
   "mistakes": string[],
   "improvedAnswer": string,
@@ -220,12 +328,14 @@ Return STRICT JSON with:
 Guidelines:
 - Encourage STAR when relevant.
 - Make it interviewer-friendly.
-- Ask for metrics ONLY if reasonable; do not fabricate numbers.
-- Keep improvedAnswer concise but premium.
+- Ask for metrics only if reasonable.
+- Do not fabricate numbers.
+- Keep improvedAnswer concise.
 
 Coach persona: ${coachStyle || coachId || 'InternBuddy Coach'}
 `.trim();
 
+  try {
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       temperature: 0.2,
@@ -247,6 +357,7 @@ Coach persona: ${coachStyle || coachId || 'InternBuddy Coach'}
     raw = raw.replace(/```json|```/g, '').trim();
 
     let parsed;
+
     try {
       parsed = JSON.parse(raw);
     } catch {
@@ -255,7 +366,10 @@ Coach persona: ${coachStyle || coachId || 'InternBuddy Coach'}
     }
 
     if (!parsed || typeof parsed !== 'object') {
-      return res.status(500).json({ error: 'bad_ai_response', raw });
+      return res.status(500).json({
+        error: 'bad_ai_response',
+        raw
+      });
     }
 
     if (typeof parsed.score !== 'number') parsed.score = 0;
@@ -271,29 +385,22 @@ Coach persona: ${coachStyle || coachId || 'InternBuddy Coach'}
   }
 });
 
-/* -------------------- Text-to-Speech (REALISTIC VOICE) -------------------- */
-/*
-  Supports:
-  - model: "gpt-4o-mini-tts" (steerable via instructions) or "tts-1-hd" (higher quality, not steerable)
-  - voice: e.g. alloy, nova, onyx, shimmer, sage, verse, marin, cedar...
-  - instructions: style control (works with gpt-4o-mini-tts only)
-  - response_format: mp3/wav/etc
-  Docs: voices + models listed by OpenAI API reference. :contentReference[oaicite:1]{index=1}
-*/
+/* -------------------- Text To Speech -------------------- */
+
 app.post('/api/tts', async (req, res) => {
   const { text, voice, quality, response_format, instructions } = req.body || {};
-  if (!text) return res.status(400).json({ error: 'Text required' });
+
+  if (!text) {
+    return res.status(400).json({ error: 'text_required' });
+  }
+
+  if (!openai) {
+    return res.status(500).json({ error: 'openai_api_key_missing' });
+  }
 
   try {
-    // If you want “most realistic” default:
-    // - Use tts-1-hd for quality
-    // - Or use gpt-4o-mini-tts for steerable style
-    const model =
-      quality === 'hd'
-        ? 'tts-1-hd'
-        : 'gpt-4o-mini-tts';
-
-    const chosenVoice = voice || 'marin'; // good default (you can change per male/female)
+    const model = quality === 'hd' ? 'tts-1-hd' : 'gpt-4o-mini-tts';
+    const chosenVoice = voice || 'alloy';
     const fmt = response_format || 'mp3';
 
     const payload = {
@@ -303,7 +410,6 @@ app.post('/api/tts', async (req, res) => {
       response_format: fmt
     };
 
-    // Only gpt-4o-mini-tts supports "instructions" per docs :contentReference[oaicite:2]{index=2}
     if (model === 'gpt-4o-mini-tts') {
       payload.instructions =
         instructions ||
@@ -311,7 +417,6 @@ app.post('/api/tts', async (req, res) => {
     }
 
     const response = await openai.audio.speech.create(payload);
-
     const audio = Buffer.from(await response.arrayBuffer());
 
     const contentType =
@@ -321,7 +426,11 @@ app.post('/api/tts', async (req, res) => {
       fmt === 'opus' ? 'audio/opus' :
       'audio/mpeg';
 
-    res.set({ 'Content-Type': contentType, 'Content-Length': audio.length });
+    res.set({
+      'Content-Type': contentType,
+      'Content-Length': audio.length
+    });
+
     res.send(audio);
   } catch (err) {
     console.error('TTS error:', err);
@@ -329,25 +438,64 @@ app.post('/api/tts', async (req, res) => {
   }
 });
 
-/* -------------------- Explicit Page Routes (NO bouncing) -------------------- */
-app.get('/', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
-app.get('/index.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
-app.get('/login.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'login.html')));
-app.get('/homepage.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'homepage.html')));
-app.get('/cvcreator.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'cvcreator.html')));
-app.get('/edit-profile.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'edit-profile.html')));
+/* -------------------- Page Routes -------------------- */
 
-// add if you use these pages
-app.get('/interview-prep.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'interview-prep.html')));
-app.get('/mock-interview.html', (req, res) => res.sendFile(path.join(PUBLIC_DIR, 'mock-interview.html')));
+app.get('/', (req, res) => sendPage(res, 'index.html'));
+app.get('/index.html', (req, res) => sendPage(res, 'index.html'));
+app.get('/login.html', (req, res) => sendPage(res, 'login.html'));
+app.get('/signup.html', (req, res) => sendPage(res, 'signup.html'));
+app.get('/homepage.html', (req, res) => sendPage(res, 'homepage.html'));
+app.get('/cvcreator.html', (req, res) => sendPage(res, 'cvcreator.html'));
+app.get('/edit-profile.html', (req, res) => sendPage(res, 'edit-profile.html'));
+app.get('/find-job.html', (req, res) => sendPage(res, 'find-job.html'));
+app.get('/job-results.html', (req, res) => sendPage(res, 'job-results.html'));
+app.get('/application-tracker.html', (req, res) => sendPage(res, 'application-tracker.html'));
+app.get('/all-sponsor-jobs.html', (req, res) => sendPage(res, 'all-sponsor-jobs.html'));
+app.get('/interview-prep.html', (req, res) => sendPage(res, 'interview-prep.html'));
+app.get('/mock-interview.html', (req, res) => sendPage(res, 'mock-interview.html'));
+app.get('/onboarding.html', (req, res) => sendPage(res, 'onboarding.html'));
+app.get('/resetpassword.html', (req, res) => sendPage(res, 'resetpassword.html'));
+app.get('/terms-and-conditions.html', (req, res) => sendPage(res, 'terms-and-conditions.html'));
+app.get('/about.html', (req, res) => sendPage(res, 'about.html'));
+
+/* Clean URL versions */
+
+app.get('/login', (req, res) => sendPage(res, 'login.html'));
+app.get('/signup', (req, res) => sendPage(res, 'signup.html'));
+app.get('/homepage', (req, res) => sendPage(res, 'homepage.html'));
+app.get('/cvcreator', (req, res) => sendPage(res, 'cvcreator.html'));
+app.get('/edit-profile', (req, res) => sendPage(res, 'edit-profile.html'));
+app.get('/find-job', (req, res) => sendPage(res, 'find-job.html'));
+app.get('/job-results', (req, res) => sendPage(res, 'job-results.html'));
+app.get('/application-tracker', (req, res) => sendPage(res, 'application-tracker.html'));
+app.get('/all-sponsor-jobs', (req, res) => sendPage(res, 'all-sponsor-jobs.html'));
+app.get('/interview-prep', (req, res) => sendPage(res, 'interview-prep.html'));
+app.get('/mock-interview', (req, res) => sendPage(res, 'mock-interview.html'));
+app.get('/onboarding', (req, res) => sendPage(res, 'onboarding.html'));
+app.get('/resetpassword', (req, res) => sendPage(res, 'resetpassword.html'));
+app.get('/terms-and-conditions', (req, res) => sendPage(res, 'terms-and-conditions.html'));
+app.get('/about', (req, res) => sendPage(res, 'about.html'));
 
 /* -------------------- 404 -------------------- */
+
 app.use((req, res) => {
-  res.status(404).send('Not found');
+  res.status(404).json({
+    error: 'not_found',
+    path: req.path
+  });
 });
 
-/* -------------------- Server -------------------- */
-app.listen(PORT, () => {
-  console.log(`InternBuddy backend live on port ${PORT}`);
-  console.log(`Serving static from: ${PUBLIC_DIR}`);
-});
+/* -------------------- Local Server Only -------------------- */
+
+if (!IS_VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`InternBuddy backend live on http://localhost:${PORT}`);
+    console.log(`Serving files from: ${PUBLIC_DIR}`);
+  });
+}
+
+/*
+  Required for Vercel.
+  Vercel can run exported Express apps as a function.
+*/
+module.exports = app;
