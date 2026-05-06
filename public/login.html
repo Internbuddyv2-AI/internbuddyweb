@@ -208,7 +208,7 @@ input:focus{
   <form id="loginForm" novalidate>
     <label for="loginEmail">Email</label>
     <input 
-      type="text" 
+      type="email" 
       id="loginEmail" 
       placeholder="Enter your email"
       autocomplete="email"
@@ -240,11 +240,32 @@ input:focus{
 </div>
 
 <script>
-/* ------------------ LOCAL LOGIN LOGIC ------------------ */
-/* Demo only: this uses localStorage accounts created from signup.html */
+/* ------------------ INTERNBUDDY LOGIN LOGIC ------------------ */
+/*
+  This login expects signup.html to save users inside:
+  localStorage["internbuddy_users"]
+
+  Each user should look like:
+  {
+    id,
+    firstName,
+    lastName,
+    name,
+    email,
+    password,
+    university,
+    course,
+    accountType,
+    sponsorshipStatus,
+    needsSponsorship
+  }
+*/
 
 const DEMO_EMAIL = "kleviszaimi73@gmail.com";
 const DEMO_PASSWORD = "demo123";
+
+const DEFAULT_PAGE = "homepage.html";
+const SPONSORSHIP_PAGE = "all-sponsor-jobs.html";
 
 const loginForm = document.getElementById("loginForm");
 const loginEmail = document.getElementById("loginEmail");
@@ -265,6 +286,18 @@ function showSuccess(message){
   alertBox.classList.remove("show");
 }
 
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function safeJsonParse(value, fallback){
+  try{
+    return JSON.parse(value);
+  }catch(error){
+    return fallback;
+  }
+}
+
 function getUsers(){
   const savedUsers = localStorage.getItem("internbuddy_users");
 
@@ -272,30 +305,156 @@ function getUsers(){
     return [];
   }
 
-  try{
-    return JSON.parse(savedUsers);
-  }catch(error){
-    return [];
+  const parsedUsers = safeJsonParse(savedUsers, []);
+
+  return Array.isArray(parsedUsers) ? parsedUsers : [];
+}
+
+function normaliseUser(user){
+  const firstName = user.firstName || user.firstname || "";
+  const lastName = user.lastName || user.lastname || "";
+  const fullName = user.name || `${firstName} ${lastName}`.trim() || user.email || "InternBuddy User";
+
+  return {
+    id: user.id || "user_" + Date.now(),
+    firstName: firstName,
+    lastName: lastName,
+    name: fullName,
+    email: (user.email || "").toLowerCase(),
+    password: user.password || "",
+    accountType: user.accountType || user.role || "Student",
+    university: user.university || user.school || "",
+    course: user.course || user.degree || "",
+    phone: user.phone || "",
+    location: user.location || "",
+    sponsorshipStatus: user.sponsorshipStatus || user.sponsorship || "not_set",
+    needsSponsorship: Boolean(user.needsSponsorship),
+    cvData: user.cvData || {},
+    tracker: user.tracker || [],
+    createdAt: user.createdAt || new Date().toISOString(),
+    lastLoginAt: new Date().toISOString()
+  };
+}
+
+function userNeedsSponsorship(user){
+  if(user.needsSponsorship === true){
+    return true;
   }
+
+  const rawStatus = String(
+    user.sponsorshipStatus ||
+    user.sponsorship ||
+    user.visaStatus ||
+    ""
+  ).toLowerCase().trim();
+
+  const noValues = [
+    "no",
+    "none",
+    "false",
+    "not needed",
+    "not_needed",
+    "no sponsorship",
+    "no_sponsorship",
+    "does not need sponsorship",
+    "does_not_need_sponsorship",
+    "uk citizen",
+    "british citizen",
+    "settled",
+    "settled status"
+  ];
+
+  if(noValues.includes(rawStatus)){
+    return false;
+  }
+
+  const yesValues = [
+    "yes",
+    "true",
+    "needed",
+    "need",
+    "needs sponsorship",
+    "needs_sponsorship",
+    "requires sponsorship",
+    "requires_sponsorship",
+    "visa sponsorship",
+    "visa_sponsorship",
+    "skilled worker",
+    "student visa",
+    "graduate visa"
+  ];
+
+  if(yesValues.includes(rawStatus)){
+    return true;
+  }
+
+  return rawStatus.includes("need") ||
+         rawStatus.includes("require") ||
+         rawStatus.includes("visa") ||
+         rawStatus.includes("sponsor");
 }
 
-function isValidEmail(email){
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+function saveActiveUser(user){
+  const cleanedUser = normaliseUser(user);
 
-function loginUser(user, token){
-  localStorage.setItem("internbuddy_user", JSON.stringify(user));
-  localStorage.setItem("internbuddy_token", token);
+  localStorage.setItem("internbuddy_user", JSON.stringify(cleanedUser));
+  localStorage.setItem("internbuddy_profile", JSON.stringify(cleanedUser));
   localStorage.setItem("internbuddy_logged_in", "true");
+  localStorage.setItem("internbuddy_token", "local-token-" + Date.now());
 
-  showSuccess("Login successful. Redirecting...");
+  return cleanedUser;
+}
+
+function updateStoredUser(updatedUser){
+  const users = getUsers();
+
+  const updatedUsers = users.map(function(user){
+    const userEmail = String(user.email || "").toLowerCase();
+
+    if(userEmail === updatedUser.email){
+      return {
+        ...user,
+        ...updatedUser,
+        password: user.password || updatedUser.password
+      };
+    }
+
+    return user;
+  });
+
+  localStorage.setItem("internbuddy_users", JSON.stringify(updatedUsers));
+}
+
+function redirectAfterLogin(user){
+  const needsSponsorship = userNeedsSponsorship(user);
+
+  if(needsSponsorship){
+    localStorage.setItem("internbuddy_redirect_reason", "sponsorship");
+    return SPONSORSHIP_PAGE;
+  }
+
+  localStorage.setItem("internbuddy_redirect_reason", "normal");
+  return DEFAULT_PAGE;
+}
+
+function loginUser(user){
+  const activeUser = saveActiveUser(user);
+  updateStoredUser(activeUser);
+
+  const targetPage = redirectAfterLogin(activeUser);
+
+  if(targetPage === SPONSORSHIP_PAGE){
+    showSuccess("Login successful. Opening sponsorship jobs...");
+  }else{
+    showSuccess("Login successful. Redirecting...");
+  }
 
   loginBtn.disabled = true;
   loginBtn.textContent = "Logging in...";
 
   setTimeout(function(){
-    window.location.href = "homepage.html";
-  }, 1000);
+    window.location.href = targetPage;
+  }, 850);
 }
 
 loginForm.addEventListener("submit", function(e){
@@ -325,29 +484,34 @@ loginForm.addEventListener("submit", function(e){
       lastName: "Zaimi",
       name: "Klevis Zaimi",
       email: DEMO_EMAIL,
+      password: DEMO_PASSWORD,
       accountType: "Demo Student",
       sponsorshipStatus: "no_sponsorship",
-      university: "Demo University"
+      needsSponsorship: false,
+      university: "Demo University",
+      course: "Computer Science"
     };
 
-    loginUser(demoUser, "demo-token-klevis");
+    loginUser(demoUser);
     return;
   }
 
-  /* Local signup account login */
   const users = getUsers();
 
   const matchedUser = users.find(function(user){
-    return user.email === email && user.password === password;
+    const storedEmail = String(user.email || "").trim().toLowerCase();
+    const storedPassword = String(user.password || "");
+
+    return storedEmail === email && storedPassword === password;
   });
 
   if(matchedUser){
-    loginUser(matchedUser, "local-token-" + Date.now());
+    loginUser(matchedUser);
     return;
   }
 
   const emailExists = users.some(function(user){
-    return user.email === email;
+    return String(user.email || "").trim().toLowerCase() === email;
   });
 
   if(emailExists){

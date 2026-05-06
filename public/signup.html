@@ -21,9 +21,16 @@
   --success:#20c997;
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-html,body{min-height:100%}
+html,
+body{
+  min-height:100%;
+}
 
 body{
   font-family:'Space Grotesk',sans-serif;
@@ -103,22 +110,6 @@ body::before{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
-}
-
-@media(max-width:560px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .card{
-    padding:24px 16px;
-    max-height:calc(100vh - 160px);
-  }
-
-  .logo-center{
-    font-size:22px;
-    margin-bottom:18px;
-  }
 }
 
 .field{
@@ -296,6 +287,22 @@ select option{
   color:#cbd5e1;
   opacity:.85;
 }
+
+@media(max-width:560px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:24px 16px;
+    max-height:calc(100vh - 160px);
+  }
+
+  .logo-center{
+    font-size:22px;
+    margin-bottom:18px;
+  }
+}
 </style>
 </head>
 
@@ -310,7 +317,6 @@ select option{
   <p>Start your journey with InternBuddy</p>
 
   <form id="signupForm" autocomplete="off">
-
     <div class="grid">
       <div class="field">
         <label for="firstName">First name</label>
@@ -325,7 +331,7 @@ select option{
 
     <div class="field">
       <label for="email">Email</label>
-      <input type="text" id="email" placeholder="example@email.com" required>
+      <input type="email" id="email" placeholder="example@email.com" required>
     </div>
 
     <div class="field">
@@ -351,7 +357,12 @@ select option{
       <label for="university">University UK</label>
       <input type="text" id="university" placeholder="Start typing your university…" autocomplete="off" required>
       <div class="uni-results" id="uniResults"></div>
-      <div class="hint" id="uniHint">University suggestions loaded locally.</div>
+      <div class="hint" id="uniHint">Start typing to search universities.</div>
+    </div>
+
+    <div class="field">
+      <label for="course">Course / Degree</label>
+      <input type="text" id="course" placeholder="Computer Science" required>
     </div>
 
     <div class="field">
@@ -379,7 +390,13 @@ select option{
 
 <script>
 /* ------------------ LOCAL SIGNUP LOGIC ------------------ */
-/* Demo only: this saves account data to localStorage in this browser. */
+/*
+  Demo mode:
+  This saves accounts in localStorage so your login/profile/homepage can use them.
+
+  For a real public site, do not store passwords in localStorage.
+  Use Firebase Auth, Supabase Auth, or another proper auth system.
+*/
 
 const uniInput = document.getElementById("university");
 const uniResults = document.getElementById("uniResults");
@@ -392,7 +409,7 @@ const successBox = document.getElementById("success");
 
 let activeIdx = -1;
 
-let universities = [
+const universities = [
   "Anglia Ruskin University",
   "Aston University",
   "Bangor University",
@@ -501,18 +518,18 @@ function showSuccess(message){
   errorBox.classList.remove("show");
 }
 
+function safeJsonParse(value, fallback){
+  try{
+    return JSON.parse(value);
+  }catch(error){
+    return fallback;
+  }
+}
+
 function getUsers(){
   const saved = localStorage.getItem("internbuddy_users");
-
-  if(!saved){
-    return [];
-  }
-
-  try{
-    return JSON.parse(saved);
-  }catch(error){
-    return [];
-  }
+  const parsed = safeJsonParse(saved || "[]", []);
+  return Array.isArray(parsed) ? parsed : [];
 }
 
 function saveUsers(users){
@@ -526,6 +543,10 @@ function isValidEmail(email){
 function calculateAge(dateString){
   const today = new Date();
   const birthDate = new Date(dateString);
+
+  if(Number.isNaN(birthDate.getTime())){
+    return 0;
+  }
 
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDifference = today.getMonth() - birthDate.getMonth();
@@ -622,6 +643,22 @@ function filterUniversities(query){
     .map(item => item.name);
 }
 
+function saveActiveSession(user){
+  const token = "local-token-" + Date.now();
+
+  localStorage.setItem("internbuddy_user", JSON.stringify(user));
+  localStorage.setItem("internbuddy_profile", JSON.stringify(user));
+  localStorage.setItem("internbuddy_token", token);
+  localStorage.setItem("internbuddy_logged_in", "true");
+
+  /*
+    Backward compatibility for your older homepage/profile code.
+    Your newer code should use internbuddy_user and internbuddy_profile.
+  */
+  localStorage.setItem("internbuddy-signup", JSON.stringify(user));
+  localStorage.setItem("internbuddy-profile", JSON.stringify(user));
+}
+
 uniInput.addEventListener("input", function(){
   const query = uniInput.value;
   activeIdx = -1;
@@ -693,10 +730,11 @@ signupForm.addEventListener("submit", function(e){
   const dateOfBirth = document.getElementById("dob").value;
   const sponsorshipStatus = document.getElementById("sponsorship").value;
   const university = document.getElementById("university").value.trim();
+  const course = document.getElementById("course").value.trim();
   const password = document.getElementById("password").value;
   const agreeTerms = document.getElementById("agreeTerms").checked;
 
-  if(!firstName || !lastName || !email || !phone || !dateOfBirth || !sponsorshipStatus || !university || !password){
+  if(!firstName || !lastName || !email || !phone || !dateOfBirth || !sponsorshipStatus || !university || !course || !password){
     showError("Please complete all fields.");
     return;
   }
@@ -723,12 +761,16 @@ signupForm.addEventListener("submit", function(e){
 
   const users = getUsers();
 
-  const existingUser = users.find(user => user.email === email);
+  const existingUser = users.find(function(user){
+    return String(user.email || "").toLowerCase() === email;
+  });
 
   if(existingUser){
     showError("An account with this email already exists. Please log in instead.");
     return;
   }
+
+  const needsSponsorship = sponsorshipStatus === "needs_sponsorship";
 
   const newUser = {
     id: "user_" + Date.now(),
@@ -738,28 +780,50 @@ signupForm.addEventListener("submit", function(e){
     email: email,
     phone: phone,
     dateOfBirth: dateOfBirth,
-    sponsorshipStatus: sponsorshipStatus,
     university: university,
+    course: course,
+    studyField: course,
     password: password,
     accountType: "Student",
-    createdAt: new Date().toISOString()
+
+    sponsorshipStatus: sponsorshipStatus,
+    needsSponsorship: needsSponsorship,
+    workAuth: sponsorshipStatus,
+
+    roleType: "",
+    targetIndustries: "",
+    locations: "United Kingdom",
+
+    cvData: {},
+    tracker: [],
+
+    createdAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString()
   };
 
   users.push(newUser);
   saveUsers(users);
+  saveActiveSession(newUser);
 
-  localStorage.setItem("internbuddy_user", JSON.stringify(newUser));
-  localStorage.setItem("internbuddy_token", "local-token-" + Date.now());
-  localStorage.setItem("internbuddy_logged_in", "true");
+  localStorage.setItem(
+    "internbuddy_redirect_reason",
+    needsSponsorship ? "sponsorship" : "normal"
+  );
+
+  sessionStorage.removeItem("internbuddy_sponsor_popup_seen");
 
   signupBtn.disabled = true;
   signupBtn.textContent = "Account Created";
 
-  showSuccess("Account created successfully. Redirecting to login...");
+  if(needsSponsorship){
+    showSuccess("Account created. Opening your sponsorship dashboard...");
+  }else{
+    showSuccess("Account created. Opening your dashboard...");
+  }
 
   setTimeout(function(){
-    window.location.href = "login.html";
-  }, 1200);
+    window.location.href = "homepage.html";
+  }, 900);
 });
 
 window.addEventListener("DOMContentLoaded", function(){
