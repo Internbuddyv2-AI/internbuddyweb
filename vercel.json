@@ -1,0 +1,48 @@
+{
+    "version": 2,
+    "buildCommand": null,
+    "outputDirectory": ".",
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/homepage",
+        "destination": "/homepage.html"
+      },
+      {
+        "source": "/login",
+        "destination": "/login.html"
+      },
+      {
+        "source": "/signup",
+        "destination": "/signup.html"
+      },
+      {
+        "source": "/cvcreator",
+        "destination": "/cvcreator.html"
+      },
+      {
+        "source": "/find-job",
+        "destination": "/find-job.html"
+      },
+      {
+        "source": "/mock-interview",
+        "destination": "/mock-interview.html"
+      },
+      {
+        "source": "/interview-prep",
+        "destination": "/interview-prep.html"
+      },
+      {
+        "source": "/application-tracker",
+        "destination": "/application-tracker.html"
+      },
+      {
+        "source": "/all-sponsor-jobs",
+        "destination": "/all-sponsor-jobs.html"
+      }
+    ]
+  }
