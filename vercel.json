@@ -1,12 +1,9 @@
 {
-    "version": 2,
-    "buildCommand": null,
-    "outputDirectory": ".",
     "cleanUrls": true,
     "rewrites": [
       {
-        "source": "/",
-        "destination": "/index.html"
+        "source": "/api/(.*)",
+        "destination": "/server.js"
       },
       {
         "source": "/homepage",
@@ -43,6 +40,22 @@
       {
         "source": "/all-sponsor-jobs",
         "destination": "/all-sponsor-jobs.html"
+      },
+      {
+        "source": "/job-results",
+        "destination": "/job-results.html"
+      },
+      {
+        "source": "/resetpassword",
+        "destination": "/resetpassword.html"
+      },
+      {
+        "source": "/terms-and-conditions",
+        "destination": "/terms-and-conditions.html"
+      },
+      {
+        "source": "/about",
+        "destination": "/about.html"
       }
     ]
   }

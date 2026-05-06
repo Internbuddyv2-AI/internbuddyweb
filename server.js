@@ -1,11 +1,14 @@
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
-const { OpenAI } = require('openai');
 
-dotenv.config();
+let dotenv;
+try {
+  dotenv = require('dotenv');
+  dotenv.config();
+} catch {
+  console.warn('dotenv not installed or not needed on Vercel.');
+}
 
 const app = express();
 
@@ -14,73 +17,59 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IS_VERCEL = !!process.env.VERCEL;
 
-/*
-  VERCEL IMPORTANT:
-  Best structure:
-  - server.js
-  - package.json
-  - public/
-      index.html
-      login.html
-      homepage.html
-      css/styles.css
-      script.js
-      interview.js
-      interview.css
-      interview-questions.json
-      coach.glb
-
-  If you keep HTML files in the root, this file will still try to serve them locally,
-  but for Vercel, putting frontend files in /public is cleaner.
-*/
-
-const publicDir = path.join(__dirname, 'public');
-const rootDir = __dirname;
-
-const PUBLIC_DIR = fs.existsSync(publicDir) ? publicDir : rootDir;
-
-const fetchFn = global.fetch
-  ? global.fetch.bind(global)
-  : (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const ROOT_DIR = process.cwd();
+const PUBLIC_DIR = fs.existsSync(path.join(ROOT_DIR, 'public'))
+  ? path.join(ROOT_DIR, 'public')
+  : ROOT_DIR;
 
 /* -------------------- Middleware -------------------- */
 
 app.disable('x-powered-by');
 
-app.use(cors({
-  origin: true,
-  credentials: false
-}));
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
+  next();
+});
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-/*
-  Local dev only.
-  On Vercel, static files should be served from /public by Vercel itself.
-*/
+// Local only. On Vercel, static files should ideally be in /public.
 if (!IS_VERCEL) {
   app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 }
 
-/* -------------------- OpenAI Client -------------------- */
-
-const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
-
-if (!hasOpenAIKey) {
-  console.warn('OPENAI_API_KEY is missing. Add it in Vercel Environment Variables.');
-}
-
-const openai = hasOpenAIKey
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
-
 /* -------------------- Helpers -------------------- */
 
-function sendPage(res, filename) {
-  const filePath = path.join(PUBLIC_DIR, filename);
+function fileExists(filePath) {
+  try {
+    return fs.existsSync(filePath);
+  } catch {
+    return false;
+  }
+}
 
-  if (!fs.existsSync(filePath)) {
+function getFilePath(filename) {
+  const publicPath = path.join(PUBLIC_DIR, filename);
+  const rootPath = path.join(ROOT_DIR, filename);
+
+  if (fileExists(publicPath)) return publicPath;
+  if (fileExists(rootPath)) return rootPath;
+
+  return null;
+}
+
+function sendPage(res, filename) {
+  const filePath = getFilePath(filename);
+
+  if (!filePath) {
     return res.status(404).send(`Page not found: ${filename}`);
   }
 
@@ -88,18 +77,29 @@ function sendPage(res, filename) {
 }
 
 function readJsonFile(filename) {
-  const possiblePaths = [
-    path.join(PUBLIC_DIR, filename),
-    path.join(rootDir, filename)
-  ];
+  const filePath = getFilePath(filename);
 
-  const foundPath = possiblePaths.find(filePath => fs.existsSync(filePath));
-
-  if (!foundPath) {
+  if (!filePath) {
     throw new Error(`${filename} not found`);
   }
 
-  return JSON.parse(fs.readFileSync(foundPath, 'utf8'));
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function getOpenAIClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    return null;
+  }
+
+  try {
+    const { OpenAI } = require('openai');
+    return new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+  } catch (error) {
+    console.error('OpenAI package load error:', error.message);
+    return null;
+  }
 }
 
 /* -------------------- Health Check -------------------- */
@@ -107,7 +107,8 @@ function readJsonFile(filename) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'InternBuddy backend running',
-    environment: IS_VERCEL ? 'vercel' : 'local'
+    environment: IS_VERCEL ? 'vercel' : 'local',
+    publicDir: PUBLIC_DIR
   });
 });
 
@@ -120,8 +121,13 @@ app.post('/api/generate-query', async (req, res) => {
     return res.status(400).json({ error: 'prompt_required' });
   }
 
+  const openai = getOpenAIClient();
+
   if (!openai) {
-    return res.status(500).json({ error: 'openai_api_key_missing' });
+    return res.status(500).json({
+      error: 'openai_not_configured',
+      message: 'Add OPENAI_API_KEY in Vercel Environment Variables and make sure openai is in package.json dependencies.'
+    });
   }
 
   try {
@@ -150,11 +156,14 @@ app.post('/api/search-jobs', async (req, res) => {
   }
 
   if (!process.env.RAPIDAPI_KEY) {
-    return res.status(500).json({ error: 'rapidapi_key_missing' });
+    return res.status(500).json({
+      error: 'rapidapi_key_missing',
+      message: 'Add RAPIDAPI_KEY in Vercel Environment Variables.'
+    });
   }
 
   try {
-    const response = await fetchFn(
+    const response = await fetch(
       `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=1&num_pages=1`,
       {
         method: 'GET',
@@ -200,8 +209,13 @@ app.post('/api/analyze-interview', async (req, res) => {
     return res.status(400).json({ error: 'qa_array_required' });
   }
 
+  const openai = getOpenAIClient();
+
   if (!openai) {
-    return res.status(500).json({ error: 'openai_api_key_missing' });
+    return res.status(500).json({
+      error: 'openai_not_configured',
+      message: 'Add OPENAI_API_KEY in Vercel Environment Variables and make sure openai is in package.json dependencies.'
+    });
   }
 
   const formatted = qa
@@ -308,8 +322,13 @@ app.post('/api/interview/feedback', async (req, res) => {
     return res.status(400).json({ error: 'question_and_answer_required' });
   }
 
+  const openai = getOpenAIClient();
+
   if (!openai) {
-    return res.status(500).json({ error: 'openai_api_key_missing' });
+    return res.status(500).json({
+      error: 'openai_not_configured',
+      message: 'Add OPENAI_API_KEY in Vercel Environment Variables and make sure openai is in package.json dependencies.'
+    });
   }
 
   const systemPrompt = `
@@ -394,8 +413,13 @@ app.post('/api/tts', async (req, res) => {
     return res.status(400).json({ error: 'text_required' });
   }
 
+  const openai = getOpenAIClient();
+
   if (!openai) {
-    return res.status(500).json({ error: 'openai_api_key_missing' });
+    return res.status(500).json({
+      error: 'openai_not_configured',
+      message: 'Add OPENAI_API_KEY in Vercel Environment Variables and make sure openai is in package.json dependencies.'
+    });
   }
 
   try {
@@ -441,40 +465,31 @@ app.post('/api/tts', async (req, res) => {
 /* -------------------- Page Routes -------------------- */
 
 app.get('/', (req, res) => sendPage(res, 'index.html'));
-app.get('/index.html', (req, res) => sendPage(res, 'index.html'));
-app.get('/login.html', (req, res) => sendPage(res, 'login.html'));
-app.get('/signup.html', (req, res) => sendPage(res, 'signup.html'));
-app.get('/homepage.html', (req, res) => sendPage(res, 'homepage.html'));
-app.get('/cvcreator.html', (req, res) => sendPage(res, 'cvcreator.html'));
-app.get('/edit-profile.html', (req, res) => sendPage(res, 'edit-profile.html'));
-app.get('/find-job.html', (req, res) => sendPage(res, 'find-job.html'));
-app.get('/job-results.html', (req, res) => sendPage(res, 'job-results.html'));
-app.get('/application-tracker.html', (req, res) => sendPage(res, 'application-tracker.html'));
-app.get('/all-sponsor-jobs.html', (req, res) => sendPage(res, 'all-sponsor-jobs.html'));
-app.get('/interview-prep.html', (req, res) => sendPage(res, 'interview-prep.html'));
-app.get('/mock-interview.html', (req, res) => sendPage(res, 'mock-interview.html'));
-app.get('/onboarding.html', (req, res) => sendPage(res, 'onboarding.html'));
-app.get('/resetpassword.html', (req, res) => sendPage(res, 'resetpassword.html'));
-app.get('/terms-and-conditions.html', (req, res) => sendPage(res, 'terms-and-conditions.html'));
-app.get('/about.html', (req, res) => sendPage(res, 'about.html'));
 
-/* Clean URL versions */
+const pages = [
+  'index',
+  'login',
+  'signup',
+  'homepage',
+  'cvcreator',
+  'edit-profile',
+  'find-job',
+  'job-results',
+  'application-tracker',
+  'all-sponsor-jobs',
+  'interview-prep',
+  'mock-interview',
+  'onboarding',
+  'resetpassword',
+  'terms-and-conditions',
+  'about',
+  'google-index'
+];
 
-app.get('/login', (req, res) => sendPage(res, 'login.html'));
-app.get('/signup', (req, res) => sendPage(res, 'signup.html'));
-app.get('/homepage', (req, res) => sendPage(res, 'homepage.html'));
-app.get('/cvcreator', (req, res) => sendPage(res, 'cvcreator.html'));
-app.get('/edit-profile', (req, res) => sendPage(res, 'edit-profile.html'));
-app.get('/find-job', (req, res) => sendPage(res, 'find-job.html'));
-app.get('/job-results', (req, res) => sendPage(res, 'job-results.html'));
-app.get('/application-tracker', (req, res) => sendPage(res, 'application-tracker.html'));
-app.get('/all-sponsor-jobs', (req, res) => sendPage(res, 'all-sponsor-jobs.html'));
-app.get('/interview-prep', (req, res) => sendPage(res, 'interview-prep.html'));
-app.get('/mock-interview', (req, res) => sendPage(res, 'mock-interview.html'));
-app.get('/onboarding', (req, res) => sendPage(res, 'onboarding.html'));
-app.get('/resetpassword', (req, res) => sendPage(res, 'resetpassword.html'));
-app.get('/terms-and-conditions', (req, res) => sendPage(res, 'terms-and-conditions.html'));
-app.get('/about', (req, res) => sendPage(res, 'about.html'));
+pages.forEach(page => {
+  app.get(`/${page}`, (req, res) => sendPage(res, `${page}.html`));
+  app.get(`/${page}.html`, (req, res) => sendPage(res, `${page}.html`));
+});
 
 /* -------------------- 404 -------------------- */
 
@@ -485,17 +500,13 @@ app.use((req, res) => {
   });
 });
 
-/* -------------------- Local Server Only -------------------- */
+/* -------------------- Local Server / Vercel Export -------------------- */
 
-if (!IS_VERCEL) {
+if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`InternBuddy backend live on http://localhost:${PORT}`);
     console.log(`Serving files from: ${PUBLIC_DIR}`);
   });
 }
 
-/*
-  Required for Vercel.
-  Vercel can run exported Express apps as a function.
-*/
 module.exports = app;
