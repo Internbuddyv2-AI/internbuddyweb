@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy | Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#4A90E2;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --dot:#FF4081;
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --danger:#ff6b6b;
+  --success:#20c997;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity:.07;
+  pointer-events:none;
+}
+
+.logo-center{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:42px;
+  color:var(--accent);
+  text-align:center;
+  cursor:pointer;
+  user-select:none;
+}
+
+.logo-center span.dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:4px;
+}
+
+.card{
+  width:100%;
+  max-width:440px;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:40px 32px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.card h2{
+  font-size:24px;
+  margin-bottom:6px;
+}
+
+.card p{
+  font-size:14px;
+  color:#ddd;
+  margin-bottom:28px;
+}
+
+label{
+  display:block;
+  margin:20px 0 6px;
+  font-weight:500;
+  font-size:14px;
+}
+
+input{
+  width:100%;
+  padding:12px 16px;
+  background:rgba(34,34,40,0.7);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  margin-top:32px;
+  border:none;
+  border-radius:8px;
+  background:var(--btn-bg);
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn:hover{
+  background:var(--btn-bg-hover);
+}
+
+.btn:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
+
+.btn-secondary{
+  background:transparent;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  margin-top:14px;
+}
+
+.btn-secondary:hover{
+  background:rgba(74,144,226,.12);
+}
+
+.alert,
+.success{
+  margin-top:16px;
+  padding:10px 12px;
+  border-radius:8px;
+  font-size:14px;
+  display:none;
+}
+
+.alert.show{
+  display:block;
+  background:rgba(255,107,107,.12);
+  border:1px solid rgba(255,107,107,.45);
+  color:#ffd6d6;
+}
+
+.success.show{
+  display:block;
+  background:rgba(32,201,151,.12);
+  border:1px solid rgba(32,201,151,.45);
+  color:#d8fff2;
+}
+
+.terms-link{
+  margin-top:28px;
+  font-weight:600;
+}
+
+.terms-link a{
+  color:#1e90ff;
+  text-decoration:none;
+}
+
+.terms-link a:hover{
+  text-decoration:underline;
+}
+
+@media(max-width:600px){
+  .card{
+    padding:28px 20px;
+  }
+
+  .logo-center{
+    font-size:22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="logo-center" onclick="window.location.href='login.html'">
+  InternBuddy<span class="dot"></span>
+</div>
+
+<div class="card">
+  <h2>Welcome back</h2>
+  <p>Sign in to continue to InternBuddy</p>
+
+  <form id="loginForm" novalidate>
+    <label for="loginEmail">Email</label>
+    <input 
+      type="text" 
+      id="loginEmail" 
+      placeholder="Enter your email"
+      autocomplete="email"
+      required
+    >
+
+    <label for="loginPassword">Password</label>
+    <input 
+      type="password" 
+      id="loginPassword" 
+      placeholder="Enter your password"
+      autocomplete="current-password"
+      required
+    >
+
+    <button class="btn" type="submit" id="loginBtn">Login</button>
+
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='signup.html'">
+      Create an account
+    </button>
+  </form>
+
+  <div class="alert" id="alertBox"></div>
+  <div class="success" id="successBox"></div>
+</div>
+
+<div class="terms-link">
+  <a href="terms-and-conditions.html">Terms and Conditions</a>
+</div>
+
+<script>
+/* ------------------ LOCAL LOGIN LOGIC ------------------ */
+/* Demo only: this uses localStorage accounts created from signup.html */
+
+const DEMO_EMAIL = "kleviszaimi73@gmail.com";
+const DEMO_PASSWORD = "demo123";
+
+const loginForm = document.getElementById("loginForm");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginBtn = document.getElementById("loginBtn");
+const alertBox = document.getElementById("alertBox");
+const successBox = document.getElementById("successBox");
+
+function showAlert(message){
+  alertBox.textContent = message;
+  alertBox.classList.add("show");
+  successBox.classList.remove("show");
+}
+
+function showSuccess(message){
+  successBox.textContent = message;
+  successBox.classList.add("show");
+  alertBox.classList.remove("show");
+}
+
+function getUsers(){
+  const savedUsers = localStorage.getItem("internbuddy_users");
+
+  if(!savedUsers){
+    return [];
+  }
+
+  try{
+    return JSON.parse(savedUsers);
+  }catch(error){
+    return [];
+  }
+}
+
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function loginUser(user, token){
+  localStorage.setItem("internbuddy_user", JSON.stringify(user));
+  localStorage.setItem("internbuddy_token", token);
+  localStorage.setItem("internbuddy_logged_in", "true");
+
+  showSuccess("Login successful. Redirecting...");
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Logging in...";
+
+  setTimeout(function(){
+    window.location.href = "homepage.html";
+  }, 1000);
+}
+
+loginForm.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  alertBox.classList.remove("show");
+  successBox.classList.remove("show");
+
+  const email = loginEmail.value.trim().toLowerCase();
+  const password = loginPassword.value.trim();
+
+  if(!email || !password){
+    showAlert("Please enter your email and password.");
+    return;
+  }
+
+  if(!isValidEmail(email)){
+    showAlert("Please enter a valid email address.");
+    return;
+  }
+
+  /* Demo login */
+  if(email === DEMO_EMAIL && password === DEMO_PASSWORD){
+    const demoUser = {
+      id: "demo_user_klevis",
+      firstName: "Klevis",
+      lastName: "Zaimi",
+      name: "Klevis Zaimi",
+      email: DEMO_EMAIL,
+      accountType: "Demo Student",
+      sponsorshipStatus: "no_sponsorship",
+      university: "Demo University"
+    };
+
+    loginUser(demoUser, "demo-token-klevis");
+    return;
+  }
+
+  /* Local signup account login */
+  const users = getUsers();
+
+  const matchedUser = users.find(function(user){
+    return user.email === email && user.password === password;
+  });
+
+  if(matchedUser){
+    loginUser(matchedUser, "local-token-" + Date.now());
+    return;
+  }
+
+  const emailExists = users.some(function(user){
+    return user.email === email;
+  });
+
+  if(emailExists){
+    showAlert("Incorrect password. Please try again.");
+    return;
+  }
+
+  showAlert("No account found with this email. Please create an account first.");
+});
+</script>
+
+</body>
+</html>

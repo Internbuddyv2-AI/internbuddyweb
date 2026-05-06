@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy | CV Builder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#0b1220;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --border:#1f2937;
+  --shadow:rgba(0,0,0,.28);
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Space Grotesk',sans-serif;
+  background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  background:url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity:0.07;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ---------- HEADER ---------- */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky; top:0; z-index:10;
+}
+.logo{
+  font-weight:800;
+  color:var(--accent);
+  cursor:pointer;
+  letter-spacing:-.5px;
+  font-size:22px;
+  user-select:none;
+}
+.logo span.dot{
+  display:inline-block;
+  width:6px;height:6px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:3px;
+  vertical-align:middle;
+}
+nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+nav a{
+  text-decoration:none;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:10px;
+  border:1px solid transparent;
+  transition: color .2s, background .2s, border .2s;
+  font-weight:600;
+  font-size:14px;
+}
+nav a:hover{ color:var(--accent); background:#fff; }
+nav a.btn{
+  background:var(--accent);
+  color:#fff;
+}
+nav a.btn:hover{ color:var(--accent); background:#fff; }
+
+/* ---------- LAYOUT ---------- */
+main{
+  max-width:1180px;
+  margin:0 auto;
+  padding:26px 16px 56px;
+  position:relative;
+  z-index:1;
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.title{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.title h1{
+  margin:0;
+  font-size:24px;
+  line-height:1.15;
+}
+.title p{
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.4;
+  max-width:760px;
+}
+.pills{display:flex;gap:8px;flex-wrap:wrap; align-items:center;}
+.pill{
+  font-size:12px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(0,0,0,0.25);
+  color:#e5e7eb;
+  white-space:nowrap;
+}
+.pill.ok{ border-color:rgba(34,197,94,0.45); color:#bbf7d0; }
+.pill.warn{ border-color:rgba(245,158,11,0.55); color:#fde68a; }
+.pill.err{ border-color:rgba(239,68,68,0.6); color:#fecaca; }
+
+.tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:12px 0 16px;
+}
+.tab{
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(34,34,40,0.55);
+  border:1px solid rgba(255,255,255,0.10);
+  color:#fff;
+  cursor:pointer;
+  user-select:none;
+  font-weight:700;
+  font-size:13px;
+  transition: transform .12s, border .2s, background .2s;
+}
+.tab:hover{ transform:translateY(-1px); border-color:rgba(74,144,226,0.65); }
+.tab.active{
+  background:rgba(34,34,40,0.9);
+  border-color:rgba(74,144,226,0.85);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1.1fr 1.3fr;
+  gap:18px;
+  align-items:start;
+}
+@media(max-width:980px){
+  header{padding:16px 12px;}
+  .grid{grid-template-columns:1fr;}
+}
+
+/* ---------- CARDS ---------- */
+.card{
+  background:rgba(34,34,40,0.92);
+  border-radius:18px;
+  padding:18px 16px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 10px 35px rgba(0,0,0,0.35);
+}
+.card-title{
+  font-size:14px;
+  font-weight:800;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.card-sub{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.4;
+  margin-top:2px;
+}
+hr.sep{
+  border:none;
+  height:1px;
+  background:rgba(255,255,255,0.06);
+  margin:14px 0;
+}
+label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  margin-top:12px;
+  display:block;
+  color:#c7d2fe;
+  font-weight:800;
+}
+input,textarea,select{
+  width:100%;
+  margin-top:6px;
+  padding:11px 12px;
+  border-radius:12px;
+  background:rgba(17,24,39,0.65);
+  border:1px solid rgba(148,163,184,0.22);
+  color:#fff;
+  outline:none;
+  font-size:14px;
+}
+input::placeholder,textarea::placeholder{ color:rgba(226,232,240,0.5); }
+input:focus,textarea:focus,select:focus{border-color:rgba(74,144,226,0.85);}
+textarea{min-height:72px; resize:vertical;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:600px){ .row{grid-template-columns:1fr;} }
+
+.helper{
+  margin-top:6px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.35;
+}
+
+/* Experience blocks */
+.exp-entry{
+  border:1px solid rgba(148,163,184,0.18);
+  border-radius:14px;
+  padding:12px;
+  background:rgba(2,6,23,0.35);
+  margin-top:12px;
+}
+.exp-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+.exp-head strong{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e5e7eb;}
+.exp-remove{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.12);
+  color:#fff;
+  border-radius:999px;
+  padding:7px 10px;
+  cursor:pointer;
+  font-weight:800;
+  font-size:12px;
+}
+.exp-remove:hover{ border-color:rgba(239,68,68,0.7); color:#fecaca; }
+.btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+  justify-content:flex-end;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  margin-top:0;
+  padding:11px 14px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-weight:800;
+  font-size:13px;
+  transition: transform .12s, opacity .2s, background .2s, border .2s;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.btn:active{ transform:translateY(1px); }
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#357abf}
+.btn-ghost{background:transparent;border:1px solid rgba(148,163,184,0.28);color:#fff}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.45)}
+.btn-danger{background:#b91c1c;color:#fff}
+.btn-danger:hover{background:#991b1b}
+.btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+
+/* ---------- PREVIEW ---------- */
+.cv-shell{
+  background:#fff;
+  color:#111;
+  border-radius:16px;
+  padding:18px;
+  min-height:520px;
+  max-height:78vh;
+  overflow:auto;
+  box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+.preview-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+/* ---------- Saved CVs ---------- */
+.saved-list{
+  display:grid;
+  gap:10px;
+}
+.saved-item{
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  padding:12px;
+  background:rgba(2,6,23,0.30);
+  display:grid;
+  gap:6px;
+}
+.saved-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.saved-title{
+  font-weight:900;
+  font-size:13px;
+}
+.saved-meta{
+  color:var(--muted);
+  font-size:12px;
+}
+.saved-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+/* Toast */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  z-index:999;
+  max-width:min(92vw,560px);
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(15,23,42,0.96);
+  border:1px solid rgba(255,255,255,0.14);
+  color:#e5e7eb;
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  display:none;
+  gap:10px;
+  align-items:flex-start;
+  font-size:13px;
+}
+.toast.show{display:flex;}
+.toast .dot{ width:8px;height:8px;border-radius:50%; background:var(--ok); margin-top:4px; }
+.toast.warn .dot{background:var(--warn);}
+.toast.err .dot{background:var(--danger);}
+.toast.warn{border-color:rgba(245,158,11,.45);}
+.toast.err{border-color:rgba(239,68,68,.55);}
+
+/* Terms */
+.terms-link{
+  text-align:center;
+  margin:26px 0 32px;
+  font-weight:800;
+  position:relative;
+  z-index:1;
+}
+.terms-link a{
+  color:#1e90ff;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo" onclick="location.href='homepage.html'">InternBuddy<span class="dot"></span></div>
+  <nav>
+    <a href="homepage.html">Dashboard</a>
+    <a href="login.html" class="btn">Return to login</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="topbar">
+    <div class="title">
+      <h1>AI CV Builder</h1>
+      <p>
+        Add real details, then click <strong>Enhance with AI</strong> to turn them into premium, ATS-friendly content.
+        Your generated CVs are saved in this browser now — later you’ll save them per user in your backend.
+      </p>
+    </div>
+    <div class="pills">
+      <span class="pill warn" id="aiStatus">AI: Offline</span>
+      <span class="pill warn" id="saveStatus">Not saved</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-builder">Builder</div>
+    <div class="tab" id="tab-saved">Saved CVs</div>
+  </div>
+
+  <!-- BUILDER VIEW -->
+  <section id="view-builder">
+    <div class="grid">
+
+      <!-- LEFT -->
+      <div class="card">
+        <div class="card-title">
+          <span>Build your CV</span>
+          <select id="templateSelect" style="max-width:240px;"></select>
+        </div>
+        <div class="card-sub">Pick a template — colours + layout apply automatically.</div>
+
+        <hr class="sep"/>
+
+        <div class="row">
+          <div>
+            <label>Full name *</label>
+            <input id="name" autocomplete="name" placeholder="Jane Doe">
+          </div>
+          <div>
+            <label>Target role *</label>
+            <input id="role" autocomplete="organization-title" placeholder="Software Engineer">
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Email *</label>
+            <input id="email" type="email" autocomplete="email" placeholder="you@email.com">
+          </div>
+          <div>
+            <label>Location</label>
+            <input id="location" placeholder="London, UK / Remote">
+          </div>
+        </div>
+
+        <label>Core skills (comma separated)</label>
+        <textarea id="skills" placeholder="React, Node.js, SQL, Communication, Leadership"></textarea>
+        <div class="helper">Tip: include both tools and soft skills for ATS keywords.</div>
+
+        <label>What do you want to be known for?</label>
+        <textarea id="focus" placeholder="e.g. Shipping features end-to-end, improving conversion, mentoring juniors..."></textarea>
+
+        <label>Experience (add at least 1)</label>
+        <div id="experienceInputs"></div>
+        <div class="btn-row">
+          <button class="btn btn-ghost" type="button" onclick="addExperienceInput()">+ Add role</button>
+        </div>
+
+        <hr class="sep"/>
+
+        <label>Education</label>
+        <div class="row">
+          <div><input id="eduDegree" placeholder="BSc Computer Science"></div>
+          <div><input id="eduInstitution" placeholder="University of …"></div>
+        </div>
+        <div class="row">
+          <div><input id="eduYear" placeholder="2027"></div>
+          <div><input id="eduLocation" placeholder="City, UK"></div>
+        </div>
+
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn btn-ghost" type="button" onclick="generateCV(false)">Generate (no AI)</button>
+          <button class="btn btn-primary" type="button" id="aiBtn" onclick="enhanceWithAI()">✨ Enhance with AI</button>
+          <button class="btn btn-primary" type="button" onclick="saveCurrentCV()">💾 Save CV</button>
+        </div>
+
+        <div class="helper" style="margin-top:10px;">
+          <strong>Backend ready:</strong> when you connect backend, you’ll POST the saved CV to
+          <code style="color:#cbd5e1;">/api/users/me/cvs</code> with the template id + structured data.
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <div class="card-title">Preview</div>
+        <div class="cv-shell" id="cvShell"></div>
+        <div class="preview-actions">
+          <button class="btn btn-ghost" type="button" onclick="shuffleVariation()">🎲 Variation</button>
+          <button class="btn btn-primary" type="button" onclick="downloadPDF()">⬇ Download PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SAVED VIEW -->
+  <section id="view-saved" style="display:none;">
+    <div class="card">
+      <div class="card-title">
+        <span>Saved CVs</span>
+        <button class="btn btn-danger" type="button" onclick="clearSavedCVs()">Delete all saved CVs</button>
+      </div>
+      <div class="card-sub">Stored in this browser for now. Later: stored per-user in backend.</div>
+      <hr class="sep"/>
+      <div class="saved-list" id="savedList"></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="terms-link">
+  <a href="terms-and-conditions.html">Terms and Conditions</a>
+</div>
+
+<div class="toast" id="toast"><span class="dot"></span><div id="toastMsg"></div></div>
+
+<script>
+/* =========================
+   CONFIG / BACKEND HOOKS
+========================= */
+const API_BASE = ""; // later: "https://api.yourdomain.com"
+
+/*
+Backend endpoints to add later (recommended):
+- POST   /api/cv/enhance            -> returns { enhanced: {summary, bullets[], skills[]} }
+- POST   /api/users/me/cvs          -> save CV for current user
+- GET    /api/users/me/cvs          -> list CVs for current user
+- GET    /api/users/me/cvs/:id/pdf  -> get PDF or regenerate
+*/
+
+function getAuthToken(){
+  return (
+    localStorage.getItem('internbuddy_token') ||
+    localStorage.getItem('internbuddy-token') ||
+    ""
+  );
+}
+
+/* =========================
+   TOAST
+========================= */
+function toast(msg, type='ok'){
+  const el = document.getElementById('toast');
+  const text = document.getElementById('toastMsg');
+  el.classList.remove('warn','err');
+  if(type==='warn') el.classList.add('warn');
+  if(type==='err') el.classList.add('err');
+  text.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> el.classList.remove('show'), 2400);
+}
+
+/* =========================
+   TEMPLATES (15)
+   - each template defines: layout + accent + header style + section style
+========================= */
+const TEMPLATES = [
+  {id:'modern',name:'Modern Two Column',layout:'two',accent:'#2563eb'},
+  {id:'executive',name:'Executive Black',layout:'one',accent:'#111827'},
+  {id:'creative',name:'Creative Orange',layout:'two',accent:'#f97316'},
+  {id:'tech',name:'Tech Green',layout:'two',accent:'#22c55e'},
+  {id:'finance',name:'Finance Forest',layout:'one',accent:'#065f46'},
+  {id:'graduate',name:'Graduate Indigo',layout:'one',accent:'#6366f1'},
+  {id:'consulting',name:'Consulting Navy',layout:'one',accent:'#1e40af'},
+  {id:'marketing',name:'Marketing Pink',layout:'two',accent:'#ec4899'},
+  {id:'academic',name:'Academic Slate',layout:'one',accent:'#374151'},
+  {id:'startup',name:'Startup Purple',layout:'two',accent:'#7c3aed'},
+  {id:'product',name:'Product Rose',layout:'two',accent:'#f43f5e'},
+  {id:'designer',name:'Designer Sky',layout:'two',accent:'#38bdf8'},
+  {id:'analyst',name:'Analyst Gold',layout:'one',accent:'#eab308'},
+  {id:'minimal',name:'Minimal Ink',layout:'one',accent:'#020617'},
+  {id:'visa',name:'Visa Focus Red',layout:'two',accent:'#dc2626'}
+];
+
+const templateSelect = document.getElementById('templateSelect');
+TEMPLATES.forEach(t=>{
+  const o=document.createElement('option');
+  o.value=t.id;
+  o.textContent=t.name;
+  templateSelect.appendChild(o);
+});
+templateSelect.value = 'modern';
+
+/* =========================
+   EXPERIENCE INPUT UI
+========================= */
+function addExperienceInput(prefill){
+  const container = document.getElementById('experienceInputs');
+  const index = container.children.length + 1;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'exp-entry';
+  wrapper.innerHTML = `
+    <div class="exp-head">
+      <strong>Role ${index}</strong>
+      <button type="button" class="exp-remove" onclick="removeExperienceEntry(this)">Remove</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <label style="margin-top:0;">Job title</label>
+        <input class="exp-title" placeholder="e.g. Software Engineer Intern">
+      </div>
+      <div>
+        <label style="margin-top:0;">Company</label>
+        <input class="exp-company" placeholder="e.g. Company XYZ">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Dates</label>
+        <input class="exp-dates" placeholder="2024 – Present">
+      </div>
+      <div>
+        <label>Location / Mode</label>
+        <input class="exp-location" placeholder="London / Hybrid">
+      </div>
+    </div>
+
+    <label>What did you do? (raw notes) *</label>
+    <textarea class="exp-notes" placeholder="- Built X\n- Improved Y\n- Worked with Z"></textarea>
+
+    <div class="helper">AI will turn these into strong bullet points with measurable impact.</div>
+  `;
+  container.appendChild(wrapper);
+
+  if(prefill){
+    wrapper.querySelector('.exp-title').value = prefill.title || '';
+    wrapper.querySelector('.exp-company').value = prefill.company || '';
+    wrapper.querySelector('.exp-dates').value = prefill.dates || '';
+    wrapper.querySelector('.exp-location').value = prefill.location || '';
+    wrapper.querySelector('.exp-notes').value = (prefill.notes || '').trim();
+  }
+
+  updateExperienceLabels();
+}
+
+function removeExperienceEntry(btn){
+  const container = document.getElementById('experienceInputs');
+  if(container.children.length === 1){
+    toast('Keep at least 1 role. Edit instead of removing.', 'warn');
+    return;
+  }
+  container.removeChild(btn.closest('.exp-entry'));
+  updateExperienceLabels();
+}
+
+function updateExperienceLabels(){
+  const entries = Array.from(document.querySelectorAll('.exp-entry'));
+  entries.forEach((entry, idx) => {
+    const label = entry.querySelector('.exp-head strong');
+    if(label) label.textContent = `Role ${idx+1}`;
+  });
+}
+
+/* =========================
+   DATA
+========================= */
+let lastRendered = null;
+let variationSeed = 0;
+
+function parseList(str){
+  return (str||'')
+    .split(/,|\n|;/)
+    .map(s=>s.trim())
+    .filter(Boolean);
+}
+
+function collectInputData(){
+  const experiences = Array.from(document.querySelectorAll('.exp-entry')).map(e => ({
+    title: e.querySelector('.exp-title').value.trim(),
+    company: e.querySelector('.exp-company').value.trim(),
+    dates: e.querySelector('.exp-dates').value.trim(),
+    location: e.querySelector('.exp-location').value.trim(),
+    notes: parseList(e.querySelector('.exp-notes').value)
+  }));
+
+  return {
+    templateId: templateSelect.value,
+    name: document.getElementById('name').value.trim(),
+    role: document.getElementById('role').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    location: document.getElementById('location').value.trim(),
+    skills: parseList(document.getElementById('skills').value),
+    focus: document.getElementById('focus').value.trim(),
+    edu: {
+      degree: document.getElementById('eduDegree').value.trim(),
+      institution: document.getElementById('eduInstitution').value.trim(),
+      year: document.getElementById('eduYear').value.trim(),
+      location: document.getElementById('eduLocation').value.trim()
+    },
+    experiences
+  };
+}
+
+function validateMinimal(d){
+  if(!d.name || !d.role || !d.email){
+    toast('Please fill: Full name, Target role, Email.', 'warn');
+    return false;
+  }
+  if(!d.experiences.length){
+    toast('Add at least 1 experience role.', 'warn');
+    return false;
+  }
+  const hasNotes = d.experiences.some(x => (x.notes||[]).length > 0);
+  if(!hasNotes){
+    toast('Add at least 1 raw note in experience (AI needs facts).', 'warn');
+    return false;
+  }
+  return true;
+}
+
+/* =========================
+   “AI” ENHANCER (LOCAL FALLBACK)
+   - If backend exists, we call it.
+========================= */
+function localEnhance(d){
+  // safe, deterministic-ish enhancement without hallucinating specifics
+  const t = TEMPLATES.find(x=>x.id===d.templateId) || TEMPLATES[0];
+
+  const focus = d.focus ? `Focus: ${d.focus.replace(/\.$/,'')}.` : '';
+  const skillsLine = d.skills.length ? `Core skills: ${d.skills.slice(0,10).join(', ')}.` : '';
+
+  const summary = [
+    `${d.role} based in ${d.location || 'the UK'}, with experience contributing to real-world outcomes.`,
+    focus,
+    skillsLine
+  ].filter(Boolean).join(' ').trim();
+
+  const enhancedExperiences = d.experiences.map((e, idx) => {
+    const verbs = ['Delivered','Built','Optimised','Collaborated on','Implemented','Owned'];
+    const verb = verbs[(variationSeed + idx) % verbs.length];
+
+    const bullets = (e.notes||[]).slice(0,4).map((n, i) => {
+      let s = n.replace(/^[-•]\s*/,'').trim();
+      if(!s) return null;
+      if(!/[.!?]$/.test(s)) s += '.';
+      // add gentle structure without inventing numbers
+      const wrappers = [
+        `${verb} ${s.charAt(0).toLowerCase() + s.slice(1)}`,
+        `Contributed to ${s.charAt(0).toLowerCase() + s.slice(1)}`,
+        `${s.charAt(0).toUpperCase() + s.slice(1)}`
+      ];
+      return wrappers[(variationSeed + i) % wrappers.length];
+    }).filter(Boolean);
+
+    // ensure at least 2 bullets
+    if(bullets.length < 2){
+      bullets.push('Supported delivery by coordinating tasks, documenting progress and communicating clearly with stakeholders.');
+    }
+    return { ...e, bullets };
+  });
+
+  return {
+    summary,
+    experiences: enhancedExperiences,
+    skills: d.skills
+  };
+}
+
+async function enhanceWithAI(){
+  const d = collectInputData();
+  if(!validateMinimal(d)) return;
+
+  // UI
+  const aiBtn = document.getElementById('aiBtn');
+  aiBtn.disabled = true;
+  document.getElementById('aiStatus').textContent = 'AI: Working…';
+  document.getElementById('aiStatus').className = 'pill warn';
+
+  try{
+    // If you later add backend: POST /api/cv/enhance
+    // Expected response: { enhanced: { summary, experiences:[{bullets:[]...}], skills:[] } }
+    if(API_BASE){
+      const res = await fetch(`${API_BASE}/api/cv/enhance`, {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          ...(getAuthToken() ? { 'Authorization': `Bearer ${getAuthToken()}` } : {})
+        },
+        body: JSON.stringify({ input: d })
+      });
+      const data = await res.json().catch(()=> ({}));
+      if(!res.ok) throw new Error(data.error || 'ai_failed');
+
+      const enhanced = data.enhanced;
+      renderCV(d, enhanced);
+      toast('Enhanced with AI.');
+      document.getElementById('aiStatus').textContent = 'AI: Online';
+      document.getElementById('aiStatus').className = 'pill ok';
+    } else {
+      // Local fallback
+      const enhanced = localEnhance(d);
+      renderCV(d, enhanced);
+      toast('AI offline — used premium local enhancer.', 'warn');
+      document.getElementById('aiStatus').textContent = 'AI: Offline';
+      document.getElementById('aiStatus').className = 'pill warn';
+    }
+  }catch(e){
+    toast('AI failed — generated without AI.', 'warn');
+    generateCV(false);
+    document.getElementById('aiStatus').textContent = 'AI: Offline';
+    document.getElementById('aiStatus').className = 'pill warn';
+  }finally{
+    aiBtn.disabled = false;
+  }
+}
+
+function generateCV(useLocalEnhance){
+  const d = collectInputData();
+  if(!validateMinimal(d)) return;
+
+  const enhanced = useLocalEnhance ? localEnhance(d) : null;
+  renderCV(d, enhanced);
+}
+
+/* =========================
+   CV RENDER (template-safe)
+========================= */
+function escapeHtml(str){
+  return String(str||'').replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[m]));
+}
+
+function renderCV(raw, enhanced){
+  const t = TEMPLATES.find(x=>x.id===raw.templateId) || TEMPLATES[0];
+  const cvShell = document.getElementById('cvShell');
+
+  const contacts = [raw.email, raw.location].filter(Boolean).join(' • ');
+  const summary = enhanced?.summary || (raw.focus ? raw.focus : 'Add a short profile summary.');
+
+  const skills = (enhanced?.skills || raw.skills || []).slice(0,14);
+  const skillsHtml = skills.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+        ${skills.map(s=>`<span style="font-size:11px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#111;font-weight:800;border:1px solid #e5e7eb;">${escapeHtml(s)}</span>`).join('')}
+      </div>`
+    : `<p style="margin:8px 0 0;color:#555;">Add skills to show them here.</p>`;
+
+  const expBlocks = (enhanced?.experiences || raw.experiences).map((e) => {
+    const bullets = (e.bullets || []).length
+      ? e.bullets
+      : (e.notes || []).map(n=>n);
+
+    const safeBullets = bullets.slice(0,5).map(b => `<li>${escapeHtml(b)}</li>`).join('');
+
+    return `
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="font-weight:900;font-size:12px;">${escapeHtml(e.title || raw.role)}</div>
+          <div style="font-weight:900;font-size:12px;color:${t.accent};">${escapeHtml(e.company || '')}</div>
+        </div>
+        <div style="color:#6b7280;font-size:11px;margin-top:2px;">
+          ${escapeHtml([e.dates, e.location].filter(Boolean).join(' • '))}
+        </div>
+        <ul style="margin:6px 0 0 16px; padding:0; font-size:12px; line-height:1.45;">
+          ${safeBullets || '<li>Add 1–3 notes for this role.</li>'}
+        </ul>
+      </div>
+    `;
+  }).join('');
+
+  const edu = raw.edu || {};
+  const eduLine = [edu.degree, edu.institution].filter(Boolean).join(' • ');
+  const eduMeta = [edu.year, edu.location].filter(Boolean).join(' • ');
+
+  const layoutClass = (t.layout === 'two') ? 'cv-two' : 'cv-one';
+  const colCss = (t.layout === 'two')
+    ? `display:grid;grid-template-columns:1.45fr 1fr;gap:18px;margin-top:12px;`
+    : `display:block;margin-top:12px;`;
+
+  cvShell.innerHTML = `
+    <div style="font-family:'Space Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;">
+      <div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:2px solid ${t.accent};padding-bottom:10px;">
+        <div>
+          <div style="font-size:20px;font-weight:1000;letter-spacing:-.02em;">${escapeHtml(raw.name)}</div>
+          <div style="font-size:12px;color:#4b5563;font-weight:700;margin-top:2px;">${escapeHtml(raw.role)}</div>
+        </div>
+        <div style="text-align:right;color:#374151;font-size:11px;font-weight:700;">
+          ${escapeHtml(contacts)}
+        </div>
+      </div>
+
+      <div style="${colCss}">
+        <div>
+          <div style="margin-top:10px;font-size:10px;letter-spacing:.18em;font-weight:1000;color:${t.accent};">PROFILE</div>
+          <div style="margin-top:6px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.5;color:#111;">
+            ${escapeHtml(summary)}
+          </div>
+
+          <div style="margin-top:12px;font-size:10px;letter-spacing:.18em;font-weight:1000;color:${t.accent};">EXPERIENCE</div>
+          <div style="margin-top:8px;">
+            ${expBlocks}
+          </div>
+        </div>
+
+        <div>
+          <div style="margin-top:10px;font-size:10px;letter-spacing:.18em;font-weight:1000;color:${t.accent};">KEY SKILLS</div>
+          ${skillsHtml}
+
+          <div style="margin-top:14px;font-size:10px;letter-spacing:.18em;font-weight:1000;color:${t.accent};">EDUCATION</div>
+          <div style="margin-top:8px;font-size:12px;line-height:1.45;">
+            <div style="font-weight:900;">${escapeHtml(eduLine || 'Add education')}</div>
+            <div style="color:#6b7280;font-size:11px;margin-top:2px;">${escapeHtml(eduMeta)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  lastRendered = { raw, enhanced, renderedAt: Date.now() };
+  document.getElementById('saveStatus').textContent = 'Not saved';
+  document.getElementById('saveStatus').className = 'pill warn';
+}
+
+/* =========================
+   VARIATION (changes wording locally)
+========================= */
+function shuffleVariation(){
+  variationSeed = (variationSeed + 1) % 9999;
+  if(!lastRendered){
+    toast('Generate a CV first.', 'warn');
+    return;
+  }
+  // re-run local enhancer on existing raw
+  const enhanced = localEnhance(lastRendered.raw);
+  renderCV(lastRendered.raw, enhanced);
+  toast('Variation generated.');
+}
+
+/* =========================
+   PDF
+========================= */
+async function downloadPDF(){
+  const cvShell = document.getElementById('cvShell');
+  if(!cvShell || !cvShell.innerHTML.trim()){
+    toast('Generate a CV first.', 'warn');
+    return;
+  }
+
+  const {jsPDF}=window.jspdf;
+  const canvas = await html2canvas(cvShell,{scale:2, backgroundColor:'#ffffff'});
+  const imgData = canvas.toDataURL('image/png');
+
+  const pdf = new jsPDF({unit:'mm', format:'a4'});
+  const pageWidth = 210;
+  const pageHeight = 297;
+
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  let y = 0;
+  pdf.addImage(imgData,'PNG',0,y,imgWidth,imgHeight);
+
+  let heightLeft = imgHeight - pageHeight;
+  while(heightLeft > 0){
+    y = y - pageHeight;
+    pdf.addPage();
+    pdf.addImage(imgData,'PNG',0,y,imgWidth,imgHeight);
+    heightLeft -= pageHeight;
+  }
+
+  const fileName = (lastRendered?.raw?.name || 'CV').trim().replace(/\s+/g,'_') + '_CV.pdf';
+  pdf.save(fileName);
+}
+
+/* =========================
+   SAVED CVs (localStorage now, backend later)
+========================= */
+const SAVED_KEY = 'internbuddy_saved_cvs_v1';
+
+function getSavedCVs(){
+  try{
+    return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
+  }catch{ return []; }
+}
+function setSavedCVs(arr){
+  localStorage.setItem(SAVED_KEY, JSON.stringify(arr));
+}
+function humanDate(ts){
+  try{
+    return new Date(ts).toLocaleString(undefined, {year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+  }catch{return '—'}
+}
+
+function saveCurrentCV(){
+  if(!lastRendered){
+    toast('Generate a CV first.', 'warn');
+    return;
+  }
+
+  const saved = getSavedCVs();
+  const entry = {
+    id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + '_' + Math.random().toString(16).slice(2),
+    createdAt: Date.now(),
+    templateId: lastRendered.raw.templateId,
+    name: lastRendered.raw.name,
+    role: lastRendered.raw.role,
+    data: lastRendered.raw,
+    enhanced: lastRendered.enhanced || null
+  };
+  saved.unshift(entry);
+  setSavedCVs(saved);
+
+  document.getElementById('saveStatus').textContent = 'Saved';
+  document.getElementById('saveStatus').className = 'pill ok';
+  toast('CV saved.');
+  renderSavedList();
+}
+
+function deleteSaved(id){
+  const saved = getSavedCVs().filter(x => x.id !== id);
+  setSavedCVs(saved);
+  toast('Deleted.');
+  renderSavedList();
+}
+
+async function redownloadSaved(id){
+  const saved = getSavedCVs().find(x => x.id === id);
+  if(!saved){
+    toast('Not found.', 'warn');
+    return;
+  }
+  // render then download
+  renderCV(saved.data, saved.enhanced);
+  await downloadPDF();
+}
+
+function openSaved(id){
+  const saved = getSavedCVs().find(x => x.id === id);
+  if(!saved){
+    toast('Not found.', 'warn');
+    return;
+  }
+  renderCV(saved.data, saved.enhanced);
+  showBuilder();
+  toast('Loaded saved CV.');
+}
+
+function clearSavedCVs(){
+  if(!confirm('Delete all saved CVs from this browser?')) return;
+  localStorage.removeItem(SAVED_KEY);
+  renderSavedList();
+  toast('All saved CVs deleted.');
+}
+
+function renderSavedList(){
+  const el = document.getElementById('savedList');
+  const saved = getSavedCVs();
+
+  if(!saved.length){
+    el.innerHTML = `
+      <div style="color:var(--muted);font-size:13px;line-height:1.5;">
+        No saved CVs yet. Generate one, then click <strong>Save CV</strong>.
+      </div>
+    `;
+    return;
+  }
+
+  el.innerHTML = saved.map(item => {
+    const tpl = TEMPLATES.find(t => t.id === item.templateId);
+    const tplName = tpl ? tpl.name : item.templateId;
+    return `
+      <div class="saved-item">
+        <div class="saved-top">
+          <div>
+            <div class="saved-title">${escapeHtml(item.name)} — ${escapeHtml(item.role)}</div>
+            <div class="saved-meta">${escapeHtml(tplName)} • ${humanDate(item.createdAt)}</div>
+          </div>
+          <div class="saved-actions">
+            <button class="btn btn-ghost" type="button" onclick="openSaved('${item.id}')">Open</button>
+            <button class="btn btn-primary" type="button" onclick="redownloadSaved('${item.id}')">Download</button>
+            <button class="btn btn-danger" type="button" onclick="deleteSaved('${item.id}')">Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* =========================
+   TAB SWITCHING
+========================= */
+const tabBuilder = document.getElementById('tab-builder');
+const tabSaved = document.getElementById('tab-saved');
+const viewBuilder = document.getElementById('view-builder');
+const viewSaved = document.getElementById('view-saved');
+
+function showBuilder(){
+  tabBuilder.classList.add('active');
+  tabSaved.classList.remove('active');
+  viewBuilder.style.display = '';
+  viewSaved.style.display = 'none';
+}
+function showSaved(){
+  tabSaved.classList.add('active');
+  tabBuilder.classList.remove('active');
+  viewSaved.style.display = '';
+  viewBuilder.style.display = 'none';
+  renderSavedList();
+}
+tabBuilder.addEventListener('click', showBuilder);
+tabSaved.addEventListener('click', showSaved);
+
+/* =========================
+   PREFILL FROM PROFILE
+========================= */
+function prefillFromProfile(){
+  const signup  = JSON.parse(localStorage.getItem('internbuddy-signup')  || '{}');
+  const profile = JSON.parse(localStorage.getItem('internbuddy-profile') || '{}');
+  const user = { ...signup, ...profile };
+
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+  if(fullName && !name.value) name.value = fullName;
+  if(user.email && !email.value) email.value = user.email;
+  if(user.locations && !location.value) location.value = user.locations;
+}
+
+/* =========================
+   INIT
+========================= */
+window.addEventListener('DOMContentLoaded', () => {
+  // ensure at least one experience block
+  addExperienceInput();
+  prefillFromProfile();
+
+  // AI status indicator
+  const hasBackendAI = Boolean(API_BASE);
+  document.getElementById('aiStatus').textContent = hasBackendAI ? 'AI: Online' : 'AI: Offline';
+  document.getElementById('aiStatus').className = hasBackendAI ? 'pill ok' : 'pill warn';
+
+  // starter preview
+  document.getElementById('cvShell').innerHTML = `
+    <div style="color:#555;font-size:12px;line-height:1.5;">
+      Fill the form and click <strong>Enhance with AI</strong> (or Generate). Then <strong>Save CV</strong> to keep it in Saved CVs.
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>

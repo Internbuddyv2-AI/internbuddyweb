@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InternBuddy | Interview Prep</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/interview.css" />
+</head>
+<body>
+  <div class="hero">
+    <div class="particles" id="particles"></div>
+
+    <header>
+      <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
+      <nav>
+        <a href="homepage.html">Dashboard</a>
+        <a href="edit-profile.html">Profile</a>
+        <a href="index.html">Logout</a>
+      </nav>
+    </header>
+
+    <div class="container">
+      <div class="top">
+        <h1>Interview Prep</h1>
+        <p>Choose your coach + interview settings, then start the mock interview.</p>
+      </div>
+
+      <div class="card">
+        <div class="grid">
+          <div>
+            <div class="label">Coach (Male/Female)</div>
+            <div class="segmented">
+              <button class="seg on" type="button" data-gender="male">Male</button>
+              <button class="seg" type="button" data-gender="female">Female</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="label">Coach style</div>
+            <select class="select" id="coachStyle">
+              <option value="Supportive Coach">Supportive Coach</option>
+              <option value="Strict Coach">Strict Coach</option>
+              <option value="Friendly Coach">Friendly Coach</option>
+              <option value="Tech Interviewer">Tech Interviewer</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="label">Level</div>
+            <select class="select" id="level">
+              <option value="Intern">Intern</option>
+              <option value="Junior">Junior</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="label">Question type</div>
+            <select class="select" id="type">
+              <option value="Behavioral">Behavioral</option>
+              <option value="Technical">Technical</option>
+              <option value="Motivation">Motivation</option>
+              <option value="Communication">Communication</option>
+              <option value="Product">Product</option>
+            </select>
+          </div>
+
+          <div>
+            <div class="label">Role (optional)</div>
+            <input class="input" id="role" placeholder="e.g., Software Engineering Intern" />
+          </div>
+
+          <div>
+            <div class="label">Rounds</div>
+            <select class="select" id="rounds">
+              <option value="5">5 questions</option>
+              <option value="8">8 questions</option>
+              <option value="10">10 questions</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn secondary" id="healthBtn" type="button">Test backend</button>
+          <button class="btn primary" id="startBtn" type="button">Start mock interview</button>
+        </div>
+
+        <div id="status" style="margin-top:14px;">Ready.</div>
+      </div>
+    </div>
+
+    <div class="terms-bar">
+      <a href="terms-and-conditions.html">Terms and Conditions</a>
+    </div>
+  </div>
+
+  <script src="/interview.js"></script>
+</body>
+</html>

@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy – Edit Profile</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --shadow:rgba(0,0,0,.18);
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity:0.07;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Header */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  color:var(--accent);
+  cursor:pointer;
+  user-select:none;
+}
+
+.logo span.dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:3px;
+  vertical-align:middle;
+}
+
+nav{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+nav a{
+  color:var(--text);
+  text-decoration:none;
+  font-weight:500;
+  transition:color .2s, background .2s, border .2s;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid transparent;
+}
+
+nav a:hover{
+  color:var(--accent);
+  background:#fff;
+}
+
+nav a.btn{
+  background:var(--btn-bg);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:10px;
+}
+
+nav a.btn:hover{
+  color:var(--btn-bg);
+  background:#fff;
+}
+
+/* Layout */
+main{
+  max-width:1100px;
+  margin:0 auto;
+  padding:40px 20px 60px;
+  position:relative;
+  z-index:1;
+}
+
+.page-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.page-header h1{
+  font-size:26px;
+  margin-bottom:4px;
+}
+
+.page-header p{
+  color:var(--muted);
+  font-size:14px;
+  max-width:720px;
+  line-height:1.4;
+}
+
+.statusbar{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
+
+.pill{
+  font-size:12px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(0,0,0,0.25);
+  color:#e5e7eb;
+  white-space:nowrap;
+}
+
+.pill.ok{
+  border-color:rgba(34,197,94,0.45);
+  color:#bbf7d0;
+}
+
+.pill.warn{
+  border-color:rgba(245,158,11,0.55);
+  color:#fde68a;
+}
+
+.pill.err{
+  border-color:rgba(239,68,68,0.6);
+  color:#fecaca;
+}
+
+.small-muted{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Grid */
+.profile-layout{
+  display:grid;
+  grid-template-columns:minmax(0,0.85fr) minmax(0,1.15fr);
+  gap:24px;
+  align-items:flex-start;
+}
+
+/* Snapshot */
+.snapshot-card{
+  background:var(--card-bg);
+  border-radius:18px;
+  padding:22px 18px;
+  box-shadow:0 8px 30px var(--shadow);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.snapshot-title{
+  font-size:16px;
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.snapshot-sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+
+.snapshot-item{
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.snapshot-label{
+  color:var(--muted);
+}
+
+.snapshot-value{
+  color:#fff;
+  font-weight:500;
+}
+
+.badge-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+
+.badge{
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(0,0,0,0.35);
+}
+
+.completeness{
+  margin-top:14px;
+}
+
+.completeness-label{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+
+.progress-track{
+  width:100%;
+  height:8px;
+  border-radius:999px;
+  background:rgba(0,0,0,0.4);
+  overflow:hidden;
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#4A90E2,#FF4081);
+  transition:width 0.25s ease-out;
+}
+
+.completeness-note{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:6px;
+  line-height:1.35;
+}
+
+/* Cards */
+.card{
+  width:100%;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:26px 22px 24px;
+  box-shadow:0 8px 30px var(--shadow);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.card h2{
+  color:#fff;
+  margin-bottom:4px;
+  font-size:20px;
+}
+
+.card p.lead{
+  color:#ddd;
+  margin-bottom:18px;
+  font-size:13px;
+  line-height:1.4;
+}
+
+/* Form */
+.form-section{
+  margin-bottom:18px;
+  border-top:1px solid rgba(255,255,255,0.05);
+  padding-top:14px;
+}
+
+.form-section:first-of-type{
+  border-top:none;
+  padding-top:0;
+}
+
+.form-section-title{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:0.15em;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+
+.form-row{
+  display:flex;
+  gap:14px;
+  margin-top:8px;
+}
+
+.form-row > div{
+  flex:1;
+}
+
+label{
+  display:block;
+  margin:10px 0 6px;
+  font-weight:500;
+  font-size:13px;
+  color:#fff;
+}
+
+input,
+select{
+  width:100%;
+  padding:10px 14px;
+  background:rgba(34,34,40,0.7);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:#fff;
+  font-size:14px;
+  font-weight:500;
+}
+
+input:focus,
+select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+input[readonly]{
+  background:rgba(34,34,40,0.35);
+  color:#cbd5e1;
+  cursor:not-allowed;
+}
+
+.dl-wrap{
+  position:relative;
+}
+
+.dl-hint{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:6px;
+  line-height:1.35;
+}
+
+/* Buttons */
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:20px;
+}
+
+button.primary{
+  background:var(--btn-bg);
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
+  border:none;
+  border-radius:10px;
+  padding:12px 18px;
+  cursor:pointer;
+  transition:background 0.2s, transform .12s;
+}
+
+button.primary:hover{
+  background:var(--btn-bg-hover);
+  transform:translateY(-1px);
+}
+
+button.primary:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+  transform:none;
+}
+
+button.secondary{
+  background:transparent;
+  color:var(--muted);
+  border:1px solid var(--border);
+  font-size:13px;
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  transition:border .2s,color .2s;
+}
+
+button.secondary:hover{
+  border-color:var(--btn-bg);
+  color:#fff;
+}
+
+/* Terms */
+.terms-link{
+  text-align:center;
+  margin:24px 0 32px;
+  font-weight:700;
+}
+
+.terms-link a{
+  color:#1e90ff;
+  text-decoration:none;
+}
+
+/* Toast */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  z-index:999;
+  max-width:min(92vw,560px);
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(15,23,42,0.96);
+  border:1px solid rgba(255,255,255,0.14);
+  color:#e5e7eb;
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  display:none;
+  gap:10px;
+  align-items:flex-start;
+  font-size:13px;
+}
+
+.toast.show{
+  display:flex;
+}
+
+.toast .dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--ok);
+  margin-top:4px;
+}
+
+.toast.warn .dot{
+  background:var(--warn);
+}
+
+.toast.err .dot{
+  background:var(--danger);
+}
+
+.toast.warn{
+  border-color:rgba(245,158,11,.45);
+}
+
+.toast.err{
+  border-color:rgba(239,68,68,.55);
+}
+
+/* Modal */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  padding:16px;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-card{
+  width:min(560px, 100%);
+  background:rgba(34,34,40,0.96);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  padding:18px 16px 16px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.modal-title{
+  font-size:16px;
+  font-weight:700;
+}
+
+.modal-sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:4px;
+  line-height:1.35;
+}
+
+.modal-close{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.14);
+  color:#fff;
+  border-radius:10px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+.modal-close:hover{
+  border-color:#fff;
+}
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.danger-btn{
+  background:#b91c1c;
+  color:#fff;
+  font-weight:800;
+  border:none;
+  border-radius:10px;
+  padding:12px 14px;
+  cursor:pointer;
+}
+
+.danger-btn:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+
+.danger-ghost{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.14);
+  color:#fff;
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+}
+
+.danger-ghost:hover{
+  border-color:#fff;
+}
+
+@media(max-width:900px){
+  header{
+    padding:16px 12px;
+  }
+
+  main{
+    padding:28px 12px 40px;
+  }
+
+  .profile-layout{
+    grid-template-columns:1fr;
+  }
+
+  .statusbar{
+    align-items:flex-start;
+  }
+}
+
+@media(max-width:600px){
+  header{
+    padding:12px 8px;
+  }
+
+  nav a{
+    font-size:14px;
+    padding:7px 10px;
+  }
+
+  nav a.btn{
+    padding:7px 12px;
+  }
+
+  .card,
+  .snapshot-card{
+    padding:20px 14px;
+  }
+
+  .form-row{
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo" id="logoBtn">InternBuddy<span class="dot"></span></div>
+  <nav>
+    <a href="homepage.html" class="btn" id="returnDashboardBtn">Return to Dashboard</a>
+  </nav>
+</header>
+
+<main>
+  <div class="page-header">
+    <div>
+      <h1>Edit your profile</h1>
+      <p>Keep your profile accurate — it powers your CV templates and personalisation across InternBuddy.</p>
+    </div>
+
+    <div class="statusbar">
+      <div class="pill warn" id="savePill">Not saved</div>
+      <div class="small-muted" id="savedAt">—</div>
+    </div>
+  </div>
+
+  <div class="profile-layout">
+    <aside class="snapshot-card">
+      <div class="snapshot-title">Profile snapshot</div>
+      <div class="snapshot-sub">A quick view of what InternBuddy will use.</div>
+
+      <div class="snapshot-item">
+        <span class="snapshot-label">Name:</span>
+        <span class="snapshot-value" id="snap-name">–</span>
+      </div>
+
+      <div class="snapshot-item">
+        <span class="snapshot-label">Path:</span>
+        <span class="snapshot-value" id="snap-path">–</span>
+      </div>
+
+      <div class="snapshot-item">
+        <span class="snapshot-label">Locations:</span>
+        <span class="snapshot-value" id="snap-locations">–</span>
+      </div>
+
+      <div class="badge-row">
+        <span class="badge" id="badge-role">Role type: –</span>
+        <span class="badge" id="badge-work">Work auth: –</span>
+        <span class="badge" id="badge-remote">Remote / onsite: –</span>
+      </div>
+
+      <div class="completeness">
+        <div class="completeness-label">
+          Profile completeness: <span id="complete-label">0%</span>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill" id="complete-bar"></div>
+        </div>
+
+        <div class="completeness-note">
+          Fill the core fields to unlock stronger CV generation.
+        </div>
+      </div>
+
+      <div style="margin-top:14px; display:grid; gap:10px;">
+        <button class="secondary" type="button" id="openPasswordModal" style="width:100%;">
+          Change password
+        </button>
+
+        <button class="secondary" type="button" id="openDeleteModal" style="width:100%; border-color:#b91c1c; color:#fecaca;">
+          Delete everything
+        </button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="card">
+        <h2>Core profile</h2>
+        <p class="lead">Premium results depend on clean inputs. Keep this accurate and role-aligned.</p>
+
+        <form id="profile-form" autocomplete="on">
+          <div class="form-section">
+            <div class="form-section-title">Personal details</div>
+
+            <div class="form-row">
+              <div>
+                <label for="email">Email locked</label>
+                <input type="email" id="email" name="email" readonly>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="firstName">First name</label>
+                <input type="text" id="firstName" name="firstName" autocomplete="given-name" required>
+              </div>
+
+              <div>
+                <label for="lastName">Last name</label>
+                <input type="text" id="lastName" name="lastName" autocomplete="family-name" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Education</div>
+
+            <div class="form-row">
+              <div>
+                <label for="university">University</label>
+                <input type="text" id="university" name="university" placeholder="e.g. London South Bank University">
+              </div>
+
+              <div>
+                <label for="gradYear">Graduation year</label>
+                <input type="number" id="gradYear" name="gradYear" min="2024" max="2038" placeholder="2027">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="degreeLevel">Degree level</label>
+                <select id="degreeLevel" name="degreeLevel">
+                  <option value="">Select</option>
+                  <option>BSc</option>
+                  <option>BA</option>
+                  <option>MSc</option>
+                  <option>MA</option>
+                  <option>PhD</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="studyField">What are you studying?</label>
+                <select id="studyField" name="studyField">
+                  <option value="">Select</option>
+                  <option>Computer Science</option>
+                  <option>Software Engineering</option>
+                  <option>Data Science</option>
+                  <option>Mechanical Engineering</option>
+                  <option>Electrical Engineering</option>
+                  <option>Business Administration</option>
+                  <option>Marketing</option>
+                  <option>Finance</option>
+                  <option>Design UX/UI</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Career preferences</div>
+
+            <div class="form-row">
+              <div>
+                <label for="roleType">Preferred role type</label>
+                <select id="roleType" name="roleType">
+                  <option value="">Select</option>
+                  <option>Internship</option>
+                  <option>Graduate / Entry-level</option>
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="workAuth">Work authorisation</label>
+                <select id="workAuth" name="workAuth">
+                  <option value="">Select</option>
+                  <option>UK Citizen / Settled</option>
+                  <option>EU Citizen</option>
+                  <option>Student visa</option>
+                  <option>Need sponsorship</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="dl-wrap">
+                <label for="locationsInput">Preferred location(s) in Great Britain</label>
+                <input
+                  type="text"
+                  name="locations"
+                  id="locationsInput"
+                  placeholder="Start typing: London, Manchester, Cardiff…"
+                  list="gbLocations"
+                  autocomplete="off"
+                >
+                <datalist id="gbLocations"></datalist>
+                <div class="dl-hint">Type to search. Select one, or type multiple separated by commas.</div>
+              </div>
+
+              <div>
+                <label for="remotePreference">Remote / onsite preference</label>
+                <select id="remotePreference" name="remotePreference">
+                  <option value="">No preference</option>
+                  <option>Remote only</option>
+                  <option>Hybrid</option>
+                  <option>Onsite</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="primary" id="saveBtn">Save profile</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div class="terms-link">
+  <a href="terms-and-conditions.html">Terms and Conditions</a>
+</div>
+
+<!-- Password Modal -->
+<div class="modal" id="passwordModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="pwTitle">Change password</div>
+        <div class="modal-sub">This updates the password for the current local account.</div>
+      </div>
+
+      <button class="modal-close" type="button" id="closePasswordModal">Close</button>
+    </div>
+
+    <form id="password-form">
+      <div style="display:grid; gap:10px;">
+        <div>
+          <label style="margin:0 0 6px;">Current password</label>
+          <input type="password" name="current" required placeholder="Current password">
+        </div>
+
+        <div class="form-row" style="margin:0;">
+          <div>
+            <label style="margin:0 0 6px;">New password</label>
+            <input type="password" name="password" minlength="8" required placeholder="Minimum 8 characters">
+          </div>
+
+          <div>
+            <label style="margin:0 0 6px;">Confirm new password</label>
+            <input type="password" name="confirm" required placeholder="Re-type new password">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" id="cancelPassword">Cancel</button>
+        <button type="submit" class="primary">Update password</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Everything Modal -->
+<div class="modal" id="deleteModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="delTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="delTitle" style="color:#fecaca;">Delete everything</div>
+        <div class="modal-sub">
+          This will remove all InternBuddy data stored in this browser, including all locally created accounts.
+          To confirm, type <strong>INTERNBUDDY</strong> below.
+        </div>
+      </div>
+
+      <button class="modal-close" type="button" id="closeDeleteModal">Close</button>
+    </div>
+
+    <div style="display:grid; gap:10px;">
+      <div>
+        <label style="margin:0 0 6px;">Type INTERNBUDDY to confirm</label>
+        <input type="text" id="deleteConfirmInput" placeholder="INTERNBUDDY" autocomplete="off">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="danger-ghost" id="cancelDelete">No, go back</button>
+        <button type="button" class="danger-btn" id="confirmDeleteBtn" disabled>I'm sure — delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="dot"></span>
+  <div id="toastMsg">Saved</div>
+</div>
+
+<script>
+/* ---------- CONFIG ---------- */
+const API_BASE = ""; // Leave blank for local demo mode
+
+/* ---------- Fields ---------- */
+const FIELD_NAMES = [
+  "email",
+  "firstName",
+  "lastName",
+  "university",
+  "gradYear",
+  "degreeLevel",
+  "studyField",
+  "roleType",
+  "workAuth",
+  "locations",
+  "remotePreference"
+];
+
+/* ---------- Utilities ---------- */
+function safeJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return fallback;
+    return JSON.parse(raw);
+  }catch(error){
+    return fallback;
+  }
+}
+
+function saveJSON(key, value){
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function toast(msg, type = "ok"){
+  const el = document.getElementById("toast");
+  const text = document.getElementById("toastMsg");
+
+  el.classList.remove("warn", "err");
+
+  if(type === "warn"){
+    el.classList.add("warn");
+  }
+
+  if(type === "err"){
+    el.classList.add("err");
+  }
+
+  text.textContent = msg;
+  el.classList.add("show");
+
+  clearTimeout(window.__toastTimer);
+
+  window.__toastTimer = setTimeout(function(){
+    el.classList.remove("show");
+  }, 2400);
+}
+
+function fmtDate(ts){
+  try{
+    const d = new Date(ts);
+
+    return d.toLocaleString(undefined, {
+      year:"numeric",
+      month:"short",
+      day:"2-digit",
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }catch(error){
+    return "—";
+  }
+}
+
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+}
+
+function cleanEmail(email){
+  return String(email || "").trim().toLowerCase();
+}
+
+/* ---------- Local account storage ---------- */
+function getUsers(){
+  return safeJSON("internbuddy_users", []);
+}
+
+function saveUsers(users){
+  saveJSON("internbuddy_users", users);
+}
+
+function getCurrentUser(){
+  return safeJSON("internbuddy_user", {});
+}
+
+function saveCurrentUser(user){
+  saveJSON("internbuddy_user", user);
+  localStorage.setItem("internbuddy_logged_in", "true");
+
+  if(!localStorage.getItem("internbuddy_token")){
+    localStorage.setItem("internbuddy_token", "local-token-" + Date.now());
+  }
+}
+
+function getProfileKey(email){
+  return "internbuddy_profile_" + cleanEmail(email);
+}
+
+function findUserIndex(users, user){
+  const userEmail = cleanEmail(user.email);
+
+  if(user.id){
+    const byId = users.findIndex(function(item){
+      return item.id === user.id;
+    });
+
+    if(byId >= 0){
+      return byId;
+    }
+  }
+
+  if(userEmail){
+    const byEmail = users.findIndex(function(item){
+      return cleanEmail(item.email) === userEmail;
+    });
+
+    if(byEmail >= 0){
+      return byEmail;
+    }
+  }
+
+  return -1;
+}
+
+function getActiveAccount(){
+  const users = getUsers();
+  const currentUser = getCurrentUser();
+
+  let index = findUserIndex(users, currentUser);
+
+  if(index >= 0){
+    return users[index];
+  }
+
+  if(isValidEmail(currentUser.email)){
+    return currentUser;
+  }
+
+  return {};
+}
+
+function upsertActiveAccount(updatedData){
+  const users = getUsers();
+  const currentUser = getCurrentUser();
+
+  let baseUser = {
+    ...currentUser,
+    ...updatedData
+  };
+
+  if(!baseUser.id){
+    baseUser.id = "user_" + Date.now();
+  }
+
+  if(baseUser.firstName || baseUser.lastName){
+    baseUser.name = [baseUser.firstName, baseUser.lastName].filter(Boolean).join(" ");
+  }
+
+  baseUser.email = cleanEmail(baseUser.email);
+  baseUser.updatedAt = Date.now();
+
+  let index = findUserIndex(users, baseUser);
+
+  if(index >= 0){
+    users[index] = {
+      ...users[index],
+      ...baseUser
+    };
+
+    baseUser = users[index];
+  }else{
+    users.push(baseUser);
+  }
+
+  saveUsers(users);
+  saveCurrentUser(baseUser);
+
+  if(isValidEmail(baseUser.email)){
+    saveJSON(getProfileKey(baseUser.email), baseUser);
+  }
+
+  localStorage.setItem("internbuddy-profile", JSON.stringify(baseUser));
+
+  return baseUser;
+}
+
+/* ---------- Great Britain locations ---------- */
+const GB_LOCATIONS = [
+  "London","Birmingham","Manchester","Leeds","Liverpool","Sheffield","Bristol","Nottingham","Newcastle upon Tyne",
+  "Leicester","Coventry","Bradford","Stoke-on-Trent","Wolverhampton","Plymouth","Southampton","Reading","Derby",
+  "Northampton","Luton","Milton Keynes","Norwich","York","Oxford","Cambridge","Brighton","Portsmouth","Bath",
+  "Exeter","Gloucester","Cheltenham","Swindon","Slough","Watford","Guildford","Woking","Maidstone","Canterbury",
+  "Colchester","Chelmsford","Ipswich","Peterborough","Sunderland","Middlesbrough","Durham","Hull","Wakefield",
+  "Preston","Blackpool","Bolton","Wigan","Stockport","Oldham","Rochdale","Salford",
+  "Edinburgh","Glasgow","Aberdeen","Dundee","Inverness","Stirling","Perth","Paisley","East Kilbride","Livingston",
+  "Cardiff","Swansea","Newport","Wrexham","Bangor","Aberystwyth",
+  "Greater London","West Midlands","Greater Manchester","West Yorkshire","Merseyside","South Yorkshire",
+  "Hampshire","Surrey","Kent","Essex","Lancashire","Tyne and Wear","Nottinghamshire","Leicestershire",
+  "Oxfordshire","Cambridgeshire","Devon","Cornwall","Sussex","Berkshire","Buckinghamshire",
+  "Gloucestershire","Somerset","Dorset","Wiltshire","Norfolk","Suffolk","Lincolnshire","Northumberland"
+];
+
+function fillGBDatalist(){
+  const datalist = document.getElementById("gbLocations");
+
+  if(!datalist){
+    return;
+  }
+
+  datalist.innerHTML = GB_LOCATIONS.map(function(location){
+    return `<option value="${location}"></option>`;
+  }).join("");
+}
+
+/* ---------- DOM ---------- */
+const savePill = document.getElementById("savePill");
+const savedAtEl = document.getElementById("savedAt");
+
+function setDirty(isDirty){
+  if(isDirty){
+    savePill.textContent = "Not saved";
+    savePill.className = "pill warn";
+  }else{
+    savePill.textContent = "Saved";
+    savePill.className = "pill ok";
+  }
+}
+
+function getCurrentProfile(){
+  const form = document.getElementById("profile-form");
+  const formData = new FormData(form);
+  const profile = {};
+
+  FIELD_NAMES.forEach(function(name){
+    profile[name] = (formData.get(name) || "").toString().trim();
+  });
+
+  profile.email = document.getElementById("email").value.trim().toLowerCase();
+
+  return profile;
+}
+
+function updateSnapshot(){
+  const profile = getCurrentProfile();
+
+  const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || "Add your name";
+  document.getElementById("snap-name").textContent = fullName;
+
+  const pathParts = [];
+
+  if(profile.degreeLevel || profile.studyField){
+    pathParts.push([profile.degreeLevel, profile.studyField].filter(Boolean).join(" · "));
+  }
+
+  if(profile.university){
+    pathParts.push(profile.university);
+  }
+
+  document.getElementById("snap-path").textContent = pathParts.join(" @ ") || "Add your education details.";
+  document.getElementById("snap-locations").textContent = profile.locations || "Add preferred locations.";
+
+  document.getElementById("badge-role").textContent = "Role type: " + (profile.roleType || "–");
+  document.getElementById("badge-work").textContent = "Work auth: " + (profile.workAuth || "–");
+  document.getElementById("badge-remote").textContent = "Remote / onsite: " + (profile.remotePreference || "–");
+}
+
+function updateCompleteness(){
+  const profile = getCurrentProfile();
+
+  const importantFields = [
+    "email",
+    "firstName",
+    "lastName",
+    "university",
+    "gradYear",
+    "studyField",
+    "roleType",
+    "workAuth",
+    "locations"
+  ];
+
+  const filled = importantFields.filter(function(field){
+    return profile[field] && String(profile[field]).trim().length > 0;
+  }).length;
+
+  const percentage = Math.round((filled / importantFields.length) * 100);
+
+  document.getElementById("complete-bar").style.width = percentage + "%";
+  document.getElementById("complete-label").textContent = percentage + "%";
+}
+
+/* ---------- Prefill form from active account ---------- */
+function prefillForm(){
+  const activeAccount = getActiveAccount();
+
+  if(!isValidEmail(activeAccount.email)){
+    toast("No logged-in account found. Please log in first.", "warn");
+
+    setTimeout(function(){
+      window.location.href = "login.html";
+    }, 900);
+
+    return;
+  }
+
+  const accountEmail = cleanEmail(activeAccount.email);
+  const accountProfile = safeJSON(getProfileKey(accountEmail), {});
+
+  const mergedData = {
+    ...activeAccount,
+    ...accountProfile
+  };
+
+  document.getElementById("email").value = accountEmail;
+
+  FIELD_NAMES.forEach(function(name){
+    if(name === "email"){
+      return;
+    }
+
+    const input = document.querySelector(`[name="${name}"]`);
+
+    if(!input){
+      return;
+    }
+
+    input.value = mergedData[name] || "";
+  });
+
+  const savedAt = mergedData.updatedAt || mergedData.savedAt || mergedData.createdAt || "";
+
+  if(savedAt){
+    savedAtEl.textContent = "Last saved: " + fmtDate(savedAt);
+    setDirty(false);
+  }else{
+    savedAtEl.textContent = "Not saved yet";
+    setDirty(true);
+  }
+
+  updateSnapshot();
+  updateCompleteness();
+}
+
+/* ---------- Optional backend save ---------- */
+async function saveProfileToBackend(profile){
+  const token = localStorage.getItem("internbuddy_token") || "";
+
+  if(!API_BASE || !token){
+    return {
+      skipped:true
+    };
+  }
+
+  const response = await fetch(`${API_BASE}/api/users/me/profile`, {
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${token}`
+    },
+    body:JSON.stringify(profile)
+  });
+
+  const data = await response.json().catch(function(){
+    return {};
+  });
+
+  if(!response.ok){
+    throw new Error(data.error || "profile_save_failed");
+  }
+
+  return data;
+}
+
+/* ---------- Form events ---------- */
+document.getElementById("profile-form").addEventListener("input", function(){
+  updateSnapshot();
+  updateCompleteness();
+  setDirty(true);
+});
+
+document.getElementById("profile-form").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const saveBtn = document.getElementById("saveBtn");
+  saveBtn.disabled = true;
+
+  const profile = getCurrentProfile();
+
+  if(!isValidEmail(profile.email)){
+    toast("Email is invalid. Please log in again.", "warn");
+    saveBtn.disabled = false;
+    return;
+  }
+
+  if(!profile.firstName || !profile.lastName){
+    toast("Please add your first and last name.", "warn");
+    saveBtn.disabled = false;
+    return;
+  }
+
+  profile.name = [profile.firstName, profile.lastName].filter(Boolean).join(" ");
+  profile.savedAt = Date.now();
+  profile.updatedAt = profile.savedAt;
+
+  const updatedAccount = upsertActiveAccount(profile);
+
+  try{
+    await saveProfileToBackend(updatedAccount);
+  }catch(error){
+    toast("Saved locally. Backend not connected yet.", "warn");
+  }
+
+  savedAtEl.textContent = "Last saved: " + fmtDate(updatedAccount.updatedAt);
+  setDirty(false);
+  toast("Profile saved to this account.");
+
+  saveBtn.disabled = false;
+});
+
+/* ---------- Top nav ---------- */
+document.getElementById("logoBtn").addEventListener("click", function(){
+  window.location.href = "homepage.html";
+});
+
+/* ---------- Password Modal ---------- */
+const passwordModal = document.getElementById("passwordModal");
+
+function openPasswordModal(){
+  passwordModal.classList.add("show");
+  passwordModal.setAttribute("aria-hidden", "false");
+}
+
+function closePasswordModal(){
+  passwordModal.classList.remove("show");
+  passwordModal.setAttribute("aria-hidden", "true");
+}
+
+document.getElementById("openPasswordModal").addEventListener("click", openPasswordModal);
+document.getElementById("closePasswordModal").addEventListener("click", closePasswordModal);
+document.getElementById("cancelPassword").addEventListener("click", closePasswordModal);
+
+passwordModal.addEventListener("click", function(e){
+  if(e.target === passwordModal){
+    closePasswordModal();
+  }
+});
+
+document.getElementById("password-form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  const currentPassword = (formData.get("current") || "").toString();
+  const newPassword = (formData.get("password") || "").toString();
+  const confirmPassword = (formData.get("confirm") || "").toString();
+
+  const activeAccount = getActiveAccount();
+  const savedPassword = activeAccount.password || "";
+
+  if(!savedPassword){
+    toast("No local password found for this account.", "warn");
+    return;
+  }
+
+  if(currentPassword !== savedPassword){
+    toast("Current password is incorrect.", "warn");
+    return;
+  }
+
+  if(newPassword.length < 8){
+    toast("New password must be at least 8 characters.", "warn");
+    return;
+  }
+
+  if(newPassword !== confirmPassword){
+    toast("New passwords do not match.", "warn");
+    return;
+  }
+
+  const updatedAccount = upsertActiveAccount({
+    ...activeAccount,
+    password:newPassword,
+    updatedAt:Date.now()
+  });
+
+  saveCurrentUser(updatedAccount);
+
+  e.target.reset();
+  closePasswordModal();
+
+  toast("Password updated for this account.");
+});
+
+/* ---------- Delete Everything Modal ---------- */
+const deleteModal = document.getElementById("deleteModal");
+const deleteInput = document.getElementById("deleteConfirmInput");
+const deleteBtn = document.getElementById("confirmDeleteBtn");
+
+function openDeleteModal(){
+  deleteModal.classList.add("show");
+  deleteModal.setAttribute("aria-hidden", "false");
+  deleteInput.value = "";
+  deleteBtn.disabled = true;
+
+  setTimeout(function(){
+    deleteInput.focus();
+  }, 50);
+}
+
+function closeDeleteModal(){
+  deleteModal.classList.remove("show");
+  deleteModal.setAttribute("aria-hidden", "true");
+}
+
+document.getElementById("openDeleteModal").addEventListener("click", openDeleteModal);
+document.getElementById("closeDeleteModal").addEventListener("click", closeDeleteModal);
+document.getElementById("cancelDelete").addEventListener("click", closeDeleteModal);
+
+deleteModal.addEventListener("click", function(e){
+  if(e.target === deleteModal){
+    closeDeleteModal();
+  }
+});
+
+deleteInput.addEventListener("input", function(){
+  deleteBtn.disabled = deleteInput.value.trim().toUpperCase() !== "INTERNBUDDY";
+});
+
+deleteBtn.addEventListener("click", function(){
+  const keysToRemove = [];
+
+  for(let i = 0; i < localStorage.length; i++){
+    const key = localStorage.key(i);
+
+    if(
+      key.startsWith("internbuddy") ||
+      key === "savedCVs" ||
+      key === "savedCV" ||
+      key === "savedJobs"
+    ){
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach(function(key){
+    localStorage.removeItem(key);
+  });
+
+  closeDeleteModal();
+  toast("All local InternBuddy data deleted.");
+
+  setTimeout(function(){
+    window.location.href = "login.html";
+  }, 900);
+});
+
+/* ---------- Init ---------- */
+window.addEventListener("DOMContentLoaded", function(){
+  fillGBDatalist();
+  prefillForm();
+});
+</script>
+
+</body>
+</html>

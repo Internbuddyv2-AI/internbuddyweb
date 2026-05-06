@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy | Terms and Conditions</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --shadow:rgba(0,0,0,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+}
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky;top:0;z-index:10;
+}
+.logo{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  color: var(--accent);
+}
+.logo span.dot{
+  display:inline-block;
+  width:6px;height:6px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:3px;
+  vertical-align: middle;
+}
+nav a{
+  margin-left:24px;
+  color:var(--text);
+  text-decoration:none;
+  font-weight:500;
+  transition: color 0.2s, background 0.2s;
+  padding:6px 0;
+  border-radius:8px;
+}
+nav a.btn{
+  background:var(--btn-bg);
+  color:#fff;
+  padding:8px 20px;
+  border-radius:8px;
+  margin-left:32px;
+}
+nav a:hover{
+  color: var(--accent);
+  background:#fff;
+}
+nav a.btn:hover {
+  color: var(--btn-bg);
+  background: #fff;
+}
+main{
+  max-width:1100px;
+  margin:0 auto;
+  padding:60px 20px 40px;
+  position:relative;
+  z-index:1;
+}
+
+/* Terms wrapper card */
+.terms-wrapper{
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px var(--shadow);
+  padding: 32px 26px 26px;
+}
+.terms-header{
+  margin-bottom:18px;
+}
+.terms-header h1{
+  font-size:28px;
+  margin-bottom:4px;
+}
+.terms-meta{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.terms-tagline{
+  font-size:14px;
+  color:var(--muted);
+  max-width:650px;
+}
+
+/* chips */
+.summary-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:14px 0 4px;
+}
+.chip{
+  font-size:11px;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.25);
+  color:var(--muted);
+}
+.chip-strong{
+  background:rgba(74,144,226,0.18);
+  border-color:var(--btn-bg);
+  color:#fff;
+  font-weight:600;
+}
+
+/* accordion cards */
+.cards{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.card{
+  background:rgba(10,10,18,0.96);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+  padding:10px 12px;
+  cursor:pointer;
+  transition: background 0.18s, border 0.18s, transform 0.12s;
+}
+.card:hover{
+  background:rgba(20,20,30,0.98);
+  border-color:rgba(74,144,226,0.4);
+  transform:translateY(-1px);
+}
+.card-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.card-main{
+  flex:1;
+}
+.card-title{
+  font-size:15px;
+  font-weight:600;
+}
+.card-summary{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:2px;
+}
+.card-pill{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0.18em;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.16);
+  color:var(--muted);
+  white-space:nowrap;
+}
+.card-toggle{
+  font-size:18px;
+  line-height:1;
+  color:var(--muted);
+  padding-left:4px;
+}
+.card-body{
+  margin-top:8px;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--text);
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.22s ease;
+}
+.card-body p,
+.card-body li{
+  color:var(--text);
+}
+.card-body ul{
+  margin:6px 0 0 18px;
+}
+.card.open{
+  border-color:var(--btn-bg);
+}
+.card.open .card-body{
+  max-height:500px;
+}
+.card.open .card-toggle{
+  transform:rotate(90deg);
+  color:var(--btn-bg);
+}
+
+/* bottom contact box */
+.terms-contact{
+  margin-top:22px;
+  padding:14px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.12);
+  font-size:13px;
+  color:var(--muted);
+}
+.terms-contact a{
+  color:var(--btn-bg);
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* Responsive */
+@media (max-width:900px){
+  header{padding:16px 12px;}
+  main{padding:32px 12px 32px;}
+  .logo{font-size:20px;}
+}
+@media (max-width:600px){
+  header{padding:12px 8px;}
+  nav a{margin-left:12px;font-size:14px;}
+  nav a.btn{margin-left:16px;padding:6px 14px;}
+  .terms-wrapper{padding:22px 16px 18px;}
+  .terms-header h1{font-size:24px;}
+}
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">InternBuddy<span class="dot"></span></div>
+    <nav>
+      <a href="index.html" class="btn">Back to Login</a>
+    </nav>
+  </header>
+  
+
+<main>
+  <section class="terms-wrapper">
+    <div class="terms-header">
+      <h1>Terms and Conditions</h1>
+      <div class="terms-meta">Last updated: January 5, 2026</div>
+      <p class="terms-tagline">
+        These Terms explain how you can use InternBuddy. Please read them carefully. By using the platform,
+        you agree to these Terms.
+      </p>
+      <div class="summary-chips">
+        <span class="chip chip-strong">Use InternBuddy responsibly</span>
+        <span class="chip">You own your CV and uploads</span>
+        <span class="chip">AI output is guidance only</span>
+        <span class="chip">We don’t control hiring decisions</span>
+      </div>
+    </div>
+
+    <div class="cards">
+
+      <!-- 1. Eligibility and Accounts -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">1. Eligibility & Accounts</div>
+            <div class="card-summary">You must be old enough, and you’re responsible for how your account is used.</div>
+          </div>
+          <div class="card-pill">Basics</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            You may use InternBuddy only if you are at least 16 years old and have the legal capacity to enter
+            into a binding contract under the laws of England and Wales.
+          </p>
+          <p>By creating an account, you agree that:</p>
+          <ul>
+            <li>You will provide accurate and up-to-date information.</li>
+            <li>You are responsible for keeping your login details secure.</li>
+            <li>You are responsible for all activity that occurs under your account.</li>
+          </ul>
+          <p>
+            If you believe your account has been accessed without your permission, you should notify us as soon as reasonably possible.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2. Acceptable Use -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">2. Acceptable Use of InternBuddy</div>
+            <div class="card-summary">Use InternBuddy for job search and career development – don’t misuse or abuse the platform.</div>
+          </div>
+          <div class="card-pill">Fair use</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>You agree to use InternBuddy only for lawful purposes and in a way that does not harm us, our systems, or other users.</p>
+          <p>You agree that you will not:</p>
+          <ul>
+            <li>Use the services in violation of any applicable law or regulation of England and Wales or any other applicable jurisdiction.</li>
+            <li>Attempt to gain unauthorised access to any systems, accounts, or networks.</li>
+            <li>Introduce viruses, malware, or other harmful or disruptive code.</li>
+            <li>Scrape, copy, or harvest data from the platform using automated tools without our permission.</li>
+            <li>Use InternBuddy to harass, abuse, defame, or otherwise harm any person or organisation.</li>
+          </ul>
+          <p>
+            We may suspend or terminate your access if we reasonably believe you have violated these Terms, applicable law,
+            or used the services in a way that poses a risk to us or others.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3. Your Content -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">3. Your Content (CVs, Profiles, Notes)</div>
+            <div class="card-summary">You keep ownership of your content. We only use it to run and improve InternBuddy.</div>
+          </div>
+          <div class="card-pill">Ownership</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            “User Content” means any CVs, profiles, notes, job information, or other materials you upload, create,
+            or store using InternBuddy.
+          </p>
+          <p>You retain all ownership rights in your User Content.</p>
+          <p>By using InternBuddy, you grant us a limited licence to:</p>
+          <ul>
+            <li>Host, store, display, and process your User Content.</li>
+            <li>Use your User Content to provide, maintain, and improve the services.</li>
+          </ul>
+          <p>
+            This licence is worldwide, non-exclusive, royalty-free, and only for the purpose of operating and
+            improving InternBuddy. We do not sell your CV or User Content to third parties.
+          </p>
+          <p>
+            You confirm that you have the necessary rights to upload and use any User Content and that it does not
+            breach any laws, confidentiality obligations, or third-party rights (including copyright and privacy).
+          </p>
+        </div>
+      </div>
+
+      <!-- 4. Job & Interview Information -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">4. Job Listings & Interview Information</div>
+            <div class="card-summary">We don’t control employers or guarantee any job, salary, or outcome.</div>
+          </div>
+          <div class="card-pill">No guarantees</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            Job listings, company information, interview tips, and suggestions displayed in InternBuddy are for
+            informational and educational purposes only.
+          </p>
+          <p>We do not:</p>
+          <ul>
+            <li>Guarantee that any job is genuine, current, or still available.</li>
+            <li>Verify the accuracy of every job listing or employer statement.</li>
+            <li>Control the recruitment process or hiring decisions of any employer.</li>
+            <li>Guarantee that using InternBuddy will secure interviews, offers, sponsorship, or employment.</li>
+          </ul>
+          <p>
+            You are responsible for independently assessing any job opportunity and employer, and for making your own decisions about whether to apply or accept any offer.
+          </p>
+        </div>
+      </div>
+
+      <!-- 5. AI & Automated Suggestions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">5. AI & Automated Suggestions</div>
+            <div class="card-summary">AI helps you draft and prepare, but you are responsible for what you submit.</div>
+          </div>
+          <div class="card-pill">AI</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            InternBuddy may use artificial intelligence and automated systems to suggest CV edits, cover letters,
+            interview answers, job matches, or other content.
+          </p>
+          <p>Important:</p>
+          <ul>
+            <li>AI output may be incomplete, inaccurate, biased, or unsuitable for your particular circumstances.</li>
+            <li>All AI-generated content is provided “as-is” and is intended as guidance only.</li>
+            <li>You must review, edit, and verify any AI-generated content before using or sending it to others.</li>
+          </ul>
+          <p>
+            InternBuddy does not provide legal, financial, immigration, or professional career advice. You remain
+            responsible for any decisions you make using AI-generated or suggested content.
+          </p>
+        </div>
+      </div>
+
+      <!-- 6. Intellectual Property -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">6. InternBuddy’s Intellectual Property</div>
+            <div class="card-summary">The platform, brand, and code belong to us. Please don’t copy or resell them.</div>
+          </div>
+          <div class="card-pill">IP</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            InternBuddy, including its name, logo, interface, software, and content (excluding User Content),
+            is owned by us or our licensors and is protected by copyright, trade mark, and other intellectual property laws.
+          </p>
+          <p>You agree that you will not:</p>
+          <ul>
+            <li>Copy, modify, or create derivative works based on the platform.</li>
+            <li>Reverse engineer, decompile, or attempt to access the source code, except where expressly permitted by law.</li>
+            <li>Use our trade marks, logos, or branding without our prior written consent.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 7. Third-Party Services -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">7. Third-Party Links & Integrations</div>
+            <div class="card-summary">If we link you to other sites or tools, their rules and privacy policies apply there.</div>
+          </div>
+          <div class="card-pill">External</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            InternBuddy may link to or integrate with third-party websites, tools, or services (for example,
+            job boards or external resources).
+          </p>
+          <p>We do not control those third parties and are not responsible for:</p>
+          <ul>
+            <li>Their content, availability, or accuracy.</li>
+            <li>Their terms of use, privacy policies, or security practices.</li>
+          </ul>
+          <p>
+            Your use of any third-party service is at your own risk and is governed by that third party’s terms
+            and privacy policies, not ours.
+          </p>
+        </div>
+      </div>
+
+      <!-- 8. Disclaimers -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">8. Disclaimers</div>
+            <div class="card-summary">We provide InternBuddy “as-is” and don’t promise it will be error-free or always available.</div>
+          </div>
+          <div class="card-pill">“As-is”</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            To the fullest extent permitted by law, InternBuddy is provided on an “as-is” and “as-available” basis.
+          </p>
+          <p>We do not warrant that:</p>
+          <ul>
+            <li>The services will be uninterrupted, secure, or free from errors, bugs, or defects.</li>
+            <li>Any particular job, employer, or outcome will result from using the services.</li>
+            <li>The information provided is complete, current, or error-free.</li>
+          </ul>
+          <p>
+            We disclaim all warranties, whether express or implied, including any implied warranties of
+            merchantability, satisfactory quality, fitness for a particular purpose, and non-infringement.
+          </p>
+        </div>
+      </div>
+
+      <!-- 9. Limitation of Liability -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">9. Limitation of Liability</div>
+            <div class="card-summary">We’re not liable for indirect losses or lost opportunities arising from using InternBuddy.</div>
+          </div>
+          <div class="card-pill">Limits</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            Nothing in these Terms excludes or limits our liability for death or personal injury caused by our negligence,
+            fraud or fraudulent misrepresentation, or any other liability that cannot be excluded or limited under
+            the laws of England and Wales.
+          </p>
+          <p>
+            Subject to the above, to the maximum extent permitted by law, InternBuddy and its owners, officers, employees,
+            and partners shall not be liable for:
+          </p>
+          <ul>
+            <li>Any indirect, incidental, special, consequential, or punitive damages.</li>
+            <li>Any loss of profits, revenue, data, goodwill, or business opportunities.</li>
+          </ul>
+          <p>
+            This applies whether the claim is based in contract, tort (including negligence), breach of statutory duty,
+            or otherwise, even if we have been advised of the possibility of such damages.
+          </p>
+        </div>
+      </div>
+
+      <!-- 10. Indemnification -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">10. Indemnification</div>
+            <div class="card-summary">If your misuse causes legal trouble, you agree not to make us carry the cost.</div>
+          </div>
+          <div class="card-pill">Responsibility</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            You agree to indemnify and hold harmless InternBuddy and its owners, officers, employees, and agents from
+            any claims, losses, liabilities, damages, costs, and expenses (including reasonable legal fees) arising out of or
+            in connection with:
+          </p>
+          <ul>
+            <li>Your use or misuse of the services.</li>
+            <li>Your breach of these Terms.</li>
+            <li>Your breach of any applicable law or third-party rights.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 11. Suspension & Termination -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">11. Suspension & Termination</div>
+            <div class="card-summary">We can suspend or close your access if you break these rules or misuse the service.</div>
+          </div>
+          <div class="card-pill">Account</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            We may suspend or terminate your access to InternBuddy at any time if we reasonably believe that:
+          </p>
+          <ul>
+            <li>You have materially breached these Terms or applicable law; or</li>
+            <li>Your use of the services poses a risk to other users, us, or the platform.</li>
+          </ul>
+          <p>
+            Upon termination, your right to use the services will cease immediately. We may retain certain information
+            where required or permitted by law (for example, for accounting or legal purposes).
+          </p>
+        </div>
+      </div>
+
+      <!-- 12. Changes to These Terms -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">12. Changes to These Terms</div>
+            <div class="card-summary">If we update these Terms, we’ll update this page and the “Last updated” date.</div>
+          </div>
+          <div class="card-pill">Updates</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            We may update these Terms from time to time, for example to reflect new features, changes in the law,
+            or improvements to the services. When we do, we will update the “Last updated” date at the top of this page.
+          </p>
+          <p>
+            Where appropriate, we may also provide additional notice (for example, via email or an in-app message).
+            If you continue to use InternBuddy after any changes take effect, you will be deemed to have accepted the
+            updated Terms.
+          </p>
+        </div>
+      </div>
+
+      <!-- 13. Governing Law & Jurisdiction (UK) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">13. Governing Law & Jurisdiction</div>
+            <div class="card-summary">These Terms are governed by the laws of England and Wales.</div>
+          </div>
+          <div class="card-pill">UK law</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            These Terms and any dispute or claim arising out of or in connection with them or their subject matter
+            (including non-contractual disputes or claims) are governed by and construed in accordance with the
+            laws of England and Wales.
+          </p>
+          <p>
+            The courts of England and Wales shall have exclusive jurisdiction to settle any dispute or claim arising
+            out of or in connection with these Terms or your use of InternBuddy, subject to any mandatory consumer
+            protection rules that apply in your country of residence.
+          </p>
+        </div>
+      </div>
+
+      <!-- 14. Contact -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-main">
+            <div class="card-title">14. Contact</div>
+            <div class="card-summary">Questions or concerns? Reach out – we’re happy to clarify anything.</div>
+          </div>
+          <div class="card-pill">Support</div>
+          <div class="card-toggle">›</div>
+        </div>
+        <div class="card-body">
+          <p>
+            If you have any questions or concerns about these Terms, please contact us at:
+          </p>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:internbuddy@outlook.com" style="color:var(--btn-bg); text-decoration:none;">internbuddy@outlook.com</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="terms-contact">
+      This page is designed to make our Terms easier to understand, but it is still a legal agreement between you and
+      InternBuddy. 
+      For Further questions or if you are unsure about anything,
+      Please contact InternBuddy via email
+    </div>
+  </section>
+</main>
+
+<script>
+// simple accordion behaviour
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', e => {
+    // don’t break links
+    if (e.target.tagName.toLowerCase() === 'a') return;
+    card.classList.toggle('open');
+  });
+});
+
+// open first card by default
+const first = document.querySelector('.card');
+if(first){ first.classList.add('open'); }
+</script>
+</body>
+</html>

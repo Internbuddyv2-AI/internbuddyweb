@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy – Complete Your Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#4A90E2;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --dot:#FF4081;
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+  position:relative;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+}
+.logo-center{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  margin-bottom:48px;
+  color: var(--accent);
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+.logo-center span.dot{
+  display:inline-block;
+  width:8px;height:8px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:4px;
+  vertical-align: middle;
+}
+.card{
+  width:100%;
+  max-width:480px;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:40px 32px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  z-index: 1;
+  position: relative;
+}
+.card h2{margin-bottom:8px;font-size:24px;color:#fff}
+.card>p{font-size:14px;color:#ddd;margin-bottom:28px}
+label{display:block;margin:20px 0 6px;font-weight:500;font-size:14px;color:#fff}
+input,select{
+  width:100%;
+  padding:12px 16px;
+  background:rgba(34,34,40,0.7);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+select option{
+  color:#111;
+  font-weight:600;
+  background:#fff;
+}
+.btn{
+  margin-top:32px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  background:var(--btn-bg);
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  transition: background 0.2s;
+}
+.btn:hover { background: var(--btn-bg-hover); }
+.file-input{position:relative}
+.file-input input[type=file]{
+  position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer
+}
+.file-input input[type="text"] {
+  background:rgba(34,34,40,0.7);
+  color:#fff;
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:15px;
+  font-weight:600;
+  pointer-events: none;
+}
+.file-name{
+  margin-top:4px;
+  font-size:13px;
+  color:#ddd;
+}
+@media (max-width:600px){
+  .card{padding:24px 8px;}
+  .logo-center{font-size:22px;margin-bottom:32px;}
+}
+</style>
+</head>
+<body>
+
+<div class="logo-center">
+  InternBuddy<span class="dot"></span>
+</div>
+
+<div class="card">
+  <h2>Complete your profile</h2>
+  <p>Help us match you with the perfect internship or job.</p>
+
+  <form id="onboarding-form" autocomplete="off">
+    <label>First name</label>
+    <input type="text" name="firstName" required>
+
+    <label>Last name</label>
+    <input type="text" name="lastName" required>
+
+    <label>What are you studying?</label>
+    <select name="studyField" required>
+      <option value="" disabled selected>Select…</option>
+      <option>Computer Science</option>
+      <option>Software Engineering</option>
+      <option>Data Science</option>
+      <option>Mechanical Engineering</option>
+      <option>Electrical Engineering</option>
+      <option>Business Administration</option>
+      <option>Marketing</option>
+      <option>Finance</option>
+      <option>Design (UX/UI)</option>
+    </select>
+
+    <label>Graduation year</label>
+    <input type="number" name="gradYear" min="2024" max="2035" placeholder="2027" required>
+
+    <label>Preferred role type</label>
+    <select name="roleType" required>
+      <option value="" disabled selected>Select…</option>
+      <option>Internship</option>
+      <option>Full-time</option>
+      <option>Part-time</option>
+    </select>
+
+    <label>Preferred location(s)</label>
+    <input type="text" name="locations" placeholder="Berlin, Remote, etc." required>
+
+    <label>Work authorisation</label>
+    <select name="workAuth">
+      <option value="" disabled selected>Select…</option>
+      <option>EU Citizen</option>
+      <option>US work auth</option>
+      <option>No need sponsorship</option>
+      <option>Need sponsorship</option>
+    </select>
+
+    <label>LinkedIn URL</label>
+    <input type="url" name="linkedin" placeholder="https://linkedin.com/in/...">
+
+    <label>Upload CV / Résumé (PDF only)</label>
+    <div class="file-input">
+      <input type="file" name="cv" accept=".pdf" required>
+      <input type="text" placeholder="Browse…" readonly>
+      <div class="file-name"></div>
+    </div>
+
+    <button type="submit" class="btn">Save & continue</button>
+  </form>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDw1PnEpFh-kYnqCmws77u4kIHZrkFNtCg",
+  authDomain: "internbuddyv1-a2caa.firebaseapp.com",
+  projectId: "internbuddyv1-a2caa",
+  storageBucket: "internbuddyv1-a2caa.appspot.com",
+  messagingSenderId: "646792285853",
+  appId: "1:646792285853:web:018d4fbc3d5dc8c05a4e74",
+  measurementId: "G-LKBMPC75EY"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// File input preview
+document.querySelector('input[type=file]').addEventListener('change', e => {
+  const name = e.target.files[0]?.name || '';
+  document.querySelector('.file-name').textContent = name;
+  e.target.nextElementSibling.value = name || 'Browse…';
+});
+
+// Redirect if not logged in
+auth.onAuthStateChanged(user => {
+  if (!user) window.location.href = 'index.html';
+});
+
+// Form submission
+document.getElementById('onboarding-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) return alert("You must be logged in!");
+
+  const form = e.target;
+  const formData = new FormData(form);
+  const cvFile = formData.get('cv');
+  if (!cvFile || cvFile.type !== 'application/pdf') return alert("Please upload a valid PDF CV.");
+
+  const submitBtn = form.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Saving...';
+
+  try {
+    const cvRef = storage.ref().child(`cvs/${user.uid}.pdf`);
+    await cvRef.put(cvFile);
+    const cvURL = await cvRef.getDownloadURL();
+
+    const profileData = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      studyField: formData.get('studyField'),
+      gradYear: formData.get('gradYear'),
+      roleType: formData.get('roleType'),
+      locations: formData.get('locations'),
+      workAuth: formData.get('workAuth') || '',
+      linkedin: formData.get('linkedin') || '',
+      cvURL,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection('users').doc(user.uid).set(profileData, {merge: true});
+    window.location.href = 'homepage.html';
+  } catch (err) {
+    console.error(err);
+    alert('Failed to save profile, please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Save & continue';
+  }
+});
+</script>
+
+<div class="terms-link" style="text-align:center;margin:24px 0;font-weight:700;">
+  <a href="terms-and-conditions.html" style="color:#1e90ff;text-decoration:none;">Terms and Conditions</a>
+</div></body>
+</html>
+
+

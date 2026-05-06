@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy | Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --shadow:rgba(0,0,0,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+  padding-bottom:76px; /* space for fixed terms bar */
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky;top:0;z-index:10;
+}
+.logo{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  color: var(--accent);
+  cursor:pointer;
+  user-select:none;
+}
+.logo span.dot{
+  display:inline-block;
+  width:6px;height:6px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:3px;
+  vertical-align: middle;
+}
+nav a{
+  margin-left:24px;
+  color:var(--text);
+  text-decoration:none;
+  font-weight:500;
+  transition: color 0.2s, background 0.2s;
+  padding:6px 10px;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+}
+nav a.btn{
+  background:var(--btn-bg);
+  color:#fff;
+  padding:8px 20px;
+  border-radius:8px;
+  margin-left:32px;
+  transition: background 0.2s;
+}
+nav a:hover, nav a.btn:hover {
+  color: var(--accent);
+  background: #fff;
+}
+nav a.btn:hover {
+  color: var(--btn-bg);
+  background: #fff;
+}
+
+/* Main layout */
+main{
+  max-width:1100px;
+  margin:0 auto;
+  padding:60px 20px 40px;
+  position:relative;
+  z-index:1;
+}
+
+/* Hero */
+.hero{
+  display:grid;
+  grid-template-columns: minmax(0,1.05fr) minmax(0,0.95fr);
+  gap:40px;
+  align-items:center;
+  margin-bottom:60px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px var(--shadow);
+  padding: 34px 30px;
+}
+.hero-content h1{
+  font-size:34px;
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:12px;
+  color: #fff;
+}
+.hero-kicker{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:0.18em;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.hero p{
+  font-size:16px;
+  color:var(--muted);
+  margin-bottom:22px;
+}
+.hero-cta-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+}
+.hero a.hero-btn{
+  background:var(--btn-bg);
+  color:#fff;
+  padding:11px 24px;
+  border-radius:10px;
+  font-weight:600;
+  text-decoration:none;
+  display:inline-block;
+  margin-top:4px;
+  transition: background 0.2s, transform 0.15s;
+}
+.hero a.hero-btn:hover{
+  background:var(--btn-bg-hover);
+  transform:translateY(-1px);
+}
+.hero-note{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Slideshow */
+.hero-media{
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 8px 30px rgba(0,0,0,0.6);
+  min-height:260px;
+  max-height:340px;
+  background:radial-gradient(circle at top left,#1f2933,#020617);
+}
+.hero-slider{ position:absolute; inset:0; }
+.hero-slide{
+  position:absolute; inset:0;
+  opacity:0;
+  transform:scale(1.03);
+  transition:opacity .8s ease, transform 1.2s ease;
+  background-size:cover;
+  background-position:center;
+  filter:saturate(1.05) contrast(1.05);
+}
+.hero-slide.active{ opacity:1; transform:scale(1); }
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(74,144,226,0.22), transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(255,64,129,0.20), transparent 50%),
+    linear-gradient(180deg, rgba(2,6,23,0.10), rgba(2,6,23,0.55));
+  pointer-events:none;
+}
+.hero-dots{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  display:flex;
+  gap:7px;
+  align-items:center;
+  padding:8px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,0.32);
+  border:1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(10px);
+}
+.hero-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  border:1px solid rgba(255,255,255,0.18);
+}
+.hero-dot.on{
+  background:rgba(74,144,226,0.9);
+  border-color:rgba(74,144,226,1);
+}
+
+/* Feature cards */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:24px;
+  margin-bottom: 40px;
+}
+.card{
+  background:var(--card-bg);
+  border-radius:16px;
+  padding:24px 22px;
+  box-shadow:0 2px 8px var(--shadow);
+  color: #fff;
+  text-align: left;
+  transition: transform 0.18s, box-shadow 0.18s, border 0.18s;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  border-color:rgba(74,144,226,0.7);
+}
+.card h3{margin-bottom:8px;font-size:19px}
+.card p{color:var(--muted);font-size:14px;margin-bottom:4px;}
+.card-tag{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:6px;
+}
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+/* Sponsor section */
+#sponsor-section{
+  display:none;
+  margin-top:40px;
+  text-align:center;
+  background: var(--card-bg);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px var(--shadow);
+  padding: 30px 26px;
+  color: #fff;
+}
+#sponsor-section h2{margin-bottom:10px;font-size:22px;}
+#sponsor-section p.helper{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+.btn-sponsor{
+  padding:10px 22px;
+  background:var(--btn-bg);
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:12px;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-sponsor:hover {
+  background: var(--btn-bg-hover);
+  transform:translateY(-1px);
+}
+table{
+  width:100%;
+  background:rgba(34,34,40,0.85);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 2px 8px var(--shadow);
+  border-collapse:collapse;
+  margin-bottom: 16px;
+}
+thead{
+  background:var(--btn-bg);
+  color:#fff
+}
+th,td{
+  padding:10px 12px;
+  text-align:left;
+  color: #fff;
+  font-size:13px;
+}
+tbody tr:nth-child(even){
+  background:rgba(255,255,255,0.04)
+}
+
+/* Fixed Terms bar */
+.terms-link.sticky-terms{
+  position:fixed;
+  left:0; right:0; bottom:0;
+  z-index:20;
+  padding:12px 10px;
+  background:rgba(17,17,17,0.78);
+  backdrop-filter: blur(10px);
+  border-top:1px solid rgba(255,255,255,0.10);
+  text-align:center;
+  font-weight:700;
+}
+.terms-link.sticky-terms a{
+  color:#1e90ff;
+  text-decoration:none;
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(74,144,226,0.14);
+  border:1px solid rgba(74,144,226,0.45);
+  transition:.18s ease;
+}
+.terms-link.sticky-terms a:hover{
+  background:#fff;
+  color:var(--btn-bg);
+}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero{ grid-template-columns:1fr; gap:24px; padding:22px 16px 20px; }
+  .hero-media{ min-height:220px; }
+}
+@media (max-width:600px){
+  header{padding:16px 8px;}
+  .logo{font-size:18px;}
+  nav a{margin-left:10px;}
+  nav a.btn{margin-left:12px; padding:8px 14px;}
+  main{padding:32px 10px 28px;}
+  .card{padding:18px 16px;}
+  #sponsor-section{padding:22px 16px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" id="logoBtn">InternBuddy<span class="dot"></span></div>
+  <nav>
+    <a href="#" id="navDashboard">Dashboard</a>
+    <a href="#" id="navProfile">Profile</a>
+    <a href="#" id="navLogout" class="btn">Logout</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-kicker" id="hero-kicker">Student career cockpit</div>
+      <h1 id="hero-heading">Welcome back, ready to land your next role?</h1>
+      <p id="hero-sub">
+        Your personalised matches, applications and interview prep — all in one place, designed for students and early-career talent.
+      </p>
+      <div class="hero-cta-row">
+        <a href="#" class="hero-btn" id="btnFindJob">Find your next role</a>
+        <span class="hero-note" id="hero-note">Tip: keep your profile updated to get sharper matches.</span>
+      </div>
+    </div>
+
+    <div class="hero-media" aria-label="Student slideshow">
+      <div class="hero-slider" id="heroSlider">
+        <div class="hero-slide active" data-src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1526378722484-bd91ca387e72?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1600&q=70"></div>
+        <div class="hero-slide" data-src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=70"></div>
+
+        <div class="hero-overlay"></div>
+        <div class="hero-dots" id="heroDots" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cards">
+    <!-- ROUTING FIX: we handle clicks via JS to ensure correct path -->
+    <a href="#" class="card-link" id="linkCvCreator">
+      <div class="card">
+        <h3>🔍 AI CV Creator</h3>
+        <p>Create a clean, compact CV in minutes — optimised for internships, grad schemes and junior roles.</p>
+        <div class="card-tag">Great starting point if you’re not sure what to write.</div>
+      </div>
+    </a>
+
+    <a href="#" class="card-link" id="linkTracker">
+      <div class="card">
+        <h3>📈 Application Tracker</h3>
+        <p>Keep every application, deadline and interview in one simple tracker — never lose a role again.</p>
+        <div class="card-tag">Perfect during peak application season.</div>
+      </div>
+    </a>
+
+    <a href="#" class="card-link" id="linkInterview">
+      <div class="card">
+        <h3>📅 Interview Prep</h3>
+        <p>Practice answers, note questions and walk into interviews feeling prepared, not panicked.</p>
+        <div class="card-tag">Turn nerves into a plan.</div>
+      </div>
+    </a>
+  </section>
+
+  <section id="sponsor-section">
+    <h2>Sponsorship-friendly companies</h2>
+    <p class="helper">
+      Based on your profile, here are a few companies known to sponsor visas for technical and business roles.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Company</th><th>Location</th><th>Typical roles</th><th>Sponsor type</th>
+        </tr>
+      </thead>
+      <tbody id="sponsor-body"></tbody>
+    </table>
+    <button class="btn-sponsor" id="btnSponsorAll">
+      View all sponsor-friendly roles
+    </button>
+  </section>
+</main>
+
+<div class="terms-link sticky-terms">
+  <a href="#" id="termsLink">Terms and Conditions</a>
+</div>
+
+<script>
+/* ------------------ ROUTING FIX (WORKS ON SUBFOLDERS + IONOS) ------------------ */
+const BASE_DIR = new URL('.', window.location.href); // directory of current page
+
+function go(file){
+  // Always resolve relative to the current folder (fixes /index.html hijacks on some hosts)
+  const url = new URL(file, BASE_DIR).href;
+  window.location.assign(url);
+}
+
+function setHref(id, file){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.setAttribute('href', new URL(file, BASE_DIR).href);
+}
+
+/* set real hrefs for accessibility AND reliable routing */
+setHref('navDashboard', 'homepage.html');
+setHref('navProfile', 'edit-profile.html');
+setHref('navLogout', 'index.html');
+setHref('btnFindJob', 'find-job.html');
+
+setHref('linkCvCreator', 'cvcreator.html');
+setHref('linkTracker', 'application-tracker.html');
+setHref('linkInterview', 'interview-prep.html');
+
+setHref('termsLink', 'terms-and-conditions.html');
+
+/* click handlers (forces correct routing) */
+document.getElementById('logoBtn').addEventListener('click', () => go('homepage.html'));
+document.getElementById('navDashboard').addEventListener('click', (e) => { e.preventDefault(); go('homepage.html'); });
+document.getElementById('navProfile').addEventListener('click', (e) => { e.preventDefault(); go('edit-profile.html'); });
+document.getElementById('navLogout').addEventListener('click', (e) => { e.preventDefault(); go('index.html'); });
+
+document.getElementById('btnFindJob').addEventListener('click', (e) => { e.preventDefault(); go('find-job.html'); });
+
+document.getElementById('linkCvCreator').addEventListener('click', (e) => { e.preventDefault(); go('cvcreator.html'); });
+document.getElementById('linkTracker').addEventListener('click', (e) => { e.preventDefault(); go('application-tracker.html'); });
+document.getElementById('linkInterview').addEventListener('click', (e) => { e.preventDefault(); go('interview-prep.html'); });
+
+document.getElementById('btnSponsorAll').addEventListener('click', () => go('all-sponsor-jobs.html'));
+document.getElementById('termsLink').addEventListener('click', (e) => { e.preventDefault(); go('terms-and-conditions.html'); });
+
+/* ------------------ BACKEND-READY AUTH HELPER (doesn't force redirect) ------------------ */
+function getAuthToken(){
+  return localStorage.getItem('internbuddy_token') || '';
+}
+// Example for later:
+// fetch(`${API_BASE}/api/me`, { headers: { Authorization: `Bearer ${getAuthToken()}` } })
+
+/* ------------------ PERSONALISATION ------------------ */
+const signupData  = JSON.parse(localStorage.getItem('internbuddy-signup')  || '{}');
+const profileData = JSON.parse(localStorage.getItem('internbuddy-profile') || '{}');
+const user = { ...signupData, ...profileData };
+
+const heroHeading = document.getElementById('hero-heading');
+const heroKicker  = document.getElementById('hero-kicker');
+const heroSub     = document.getElementById('hero-sub');
+const heroNote    = document.getElementById('hero-note');
+
+if (user.firstName) heroHeading.textContent = `Welcome back, ${user.firstName}! Ready to land your next role?`;
+if (user.studyField) heroKicker.textContent = `${user.studyField} · Student career cockpit`;
+
+if (user.roleType || user.targetIndustries) {
+  const roleText = user.roleType ? String(user.roleType).toLowerCase() : 'roles';
+  const indText  = user.targetIndustries || 'top companies';
+  heroSub.textContent =
+    `We’ll help you stay on top of applications for ${roleText} across ${indText}. One hub for your search.`;
+}
+if (user.locations) heroNote.textContent =
+  `Matches are currently based on: ${user.locations}. Update your profile to tweak this.`;
+
+/* ------------------ SPONSOR SECTION ------------------ */
+const sponsors = [
+  {company:"Google",     location:"London, Dublin, Zurich",     roles:"Software, Data, PM",      type:"UK & EU visa routes"},
+  {company:"Amazon",     location:"London, Berlin, Luxembourg", roles:"SDE, Cloud, Ops",        type:"Various work visas"},
+  {company:"Bloomberg",  location:"London",                     roles:"Software, Analytics",    type:"UK Skilled Worker"},
+  {company:"JP Morgan",  location:"London",                     roles:"Technology, Finance",    type:"UK Skilled Worker"}
+];
+
+if (user.workAuth && String(user.workAuth).toLowerCase().includes('sponsor')) {
+  const tbody = document.getElementById('sponsor-body');
+  tbody.innerHTML = sponsors.map(s => `
+    <tr>
+      <td>${s.company}</td>
+      <td>${s.location}</td>
+      <td>${s.roles}</td>
+      <td>${s.type}</td>
+    </tr>`).join('');
+  document.getElementById('sponsor-section').style.display = 'block';
+}
+
+/* ------------------ HERO SLIDESHOW (PRELOAD + 10 IMAGES) ------------------ */
+const slides = Array.from(document.querySelectorAll('.hero-slide'));
+const dotsWrap = document.getElementById('heroDots');
+
+let idx = 0;
+let timer = null;
+
+function buildDots(){
+  dotsWrap.innerHTML = '';
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'hero-dot' + (i === idx ? ' on' : '');
+    dotsWrap.appendChild(d);
+  });
+}
+
+function setSlide(i){
+  idx = (i + slides.length) % slides.length;
+  slides.forEach((s, j) => s.classList.toggle('active', j === idx));
+  buildDots();
+}
+
+function startSlider(){
+  if (timer) clearInterval(timer);
+  timer = setInterval(() => setSlide(idx + 1), 4200);
+}
+
+function preloadSlides(){
+  slides.forEach(slide => {
+    const url = slide.getAttribute('data-src');
+    if(!url) return;
+    const img = new Image();
+    img.onload = () => { slide.style.backgroundImage = `url('${url}')`; };
+    img.onerror = () => {
+      slide.style.backgroundImage =
+        "linear-gradient(135deg, rgba(74,144,226,0.35), rgba(255,64,129,0.25), rgba(2,6,23,0.85))";
+    };
+    img.src = url;
+  });
+}
+
+preloadSlides();
+setSlide(0);
+startSlider();
+
+const heroMedia = document.querySelector('.hero-media');
+heroMedia.addEventListener('mouseenter', () => timer && clearInterval(timer));
+heroMedia.addEventListener('mouseleave', startSlider);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy | Sign Up</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#ddd;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --danger:#ff6b6b;
+  --success:#20c997;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{min-height:100%}
+
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity:.07;
+  pointer-events:none;
+  z-index:0;
+}
+
+.logo-center{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  margin-bottom:26px;
+  color:var(--accent);
+  text-align:center;
+  z-index:1;
+  position:relative;
+  cursor:pointer;
+  user-select:none;
+}
+
+.logo-center span.dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:4px;
+  vertical-align:middle;
+}
+
+.card{
+  width:100%;
+  max-width:560px;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:36px 30px;
+  box-shadow:0 8px 30px rgba(0,0,0,.15);
+  z-index:1;
+  position:relative;
+  border:1px solid rgba(255,255,255,0.06);
+  max-height:calc(100vh - 180px);
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.card h2{
+  margin-bottom:8px;
+  font-size:24px;
+  color:#fff;
+}
+
+.card>p{
+  font-size:14px;
+  color:var(--muted);
+  margin-bottom:22px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+@media(max-width:560px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:24px 16px;
+    max-height:calc(100vh - 160px);
+  }
+
+  .logo-center{
+    font-size:22px;
+    margin-bottom:18px;
+  }
+}
+
+.field{
+  margin:12px 0;
+}
+
+label{
+  display:block;
+  margin:0 0 6px;
+  font-weight:500;
+  font-size:14px;
+  color:#fff;
+}
+
+input,
+select{
+  width:100%;
+  padding:12px 14px;
+  background:rgba(34,34,40,0.7);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+}
+
+input:focus,
+select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+select option{
+  color:#111;
+  font-weight:600;
+  background:#fff;
+}
+
+.btn{
+  margin-top:18px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:10px;
+  background:var(--btn-bg);
+  color:#fff;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+  transition:background .2s, transform .12s;
+}
+
+.btn:hover{
+  background:var(--btn-bg-hover);
+  transform:translateY(-1px);
+}
+
+.btn:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.alert,
+.success{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  display:none;
+  font-size:14px;
+}
+
+.alert{
+  background:rgba(255,107,107,.14);
+  border:1px solid rgba(255,107,107,.55);
+  color:#ffdede;
+}
+
+.success{
+  background:rgba(32,201,151,.14);
+  border:1px solid rgba(32,201,151,.55);
+  color:#d8fff2;
+}
+
+.alert.show,
+.success.show{
+  display:block;
+}
+
+.tc-row{
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.18);
+  border:1px solid rgba(255,255,255,0.10);
+}
+
+.tc-row input[type="checkbox"]{
+  width:18px;
+  height:18px;
+  accent-color:var(--accent);
+  flex:0 0 auto;
+}
+
+.tc-row .tc-text{
+  font-size:14px;
+  color:#fff;
+  line-height:1.2;
+}
+
+.tc-row .tc-text a{
+  color:#1e90ff;
+  text-decoration:none;
+  font-weight:800;
+}
+
+.footer-links{
+  margin-top:18px;
+  text-align:center;
+  font-size:13px;
+  z-index:1;
+  position:relative;
+}
+
+.footer-links a{
+  color:#1e90ff;
+  text-decoration:none;
+  font-weight:800;
+}
+
+.uni-wrap{
+  position:relative;
+}
+
+.uni-results{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  right:0;
+  background:#1b1b20;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
+  max-height:240px;
+  overflow:auto;
+  display:none;
+  z-index:50;
+  box-shadow:0 18px 45px rgba(0,0,0,0.55);
+}
+
+.uni-item{
+  padding:10px 12px;
+  cursor:pointer;
+  font-size:14px;
+  color:#fff;
+}
+
+.uni-item:hover,
+.uni-item.active{
+  background:rgba(74,144,226,0.18);
+}
+
+.uni-empty{
+  padding:10px 12px;
+  font-size:13px;
+  color:#cbd5e1;
+  opacity:.9;
+}
+
+.hint{
+  margin-top:6px;
+  font-size:12px;
+  color:#cbd5e1;
+  opacity:.85;
+}
+</style>
+</head>
+
+<body>
+
+<div class="logo-center" onclick="window.location.href='login.html'">
+  InternBuddy<span class="dot"></span>
+</div>
+
+<div class="card">
+  <h2>Create your account</h2>
+  <p>Start your journey with InternBuddy</p>
+
+  <form id="signupForm" autocomplete="off">
+
+    <div class="grid">
+      <div class="field">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" required>
+      </div>
+
+      <div class="field">
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="text" id="email" placeholder="example@email.com" required>
+    </div>
+
+    <div class="field">
+      <label for="phone">Phone number</label>
+      <input type="tel" id="phone" placeholder="+44 7123 456789" required>
+    </div>
+
+    <div class="field">
+      <label for="dob">Date of birth</label>
+      <input type="date" id="dob" required>
+    </div>
+
+    <div class="field">
+      <label for="sponsorship">Sponsorship</label>
+      <select id="sponsorship" required>
+        <option value="" disabled selected>Select…</option>
+        <option value="no_sponsorship">Do not need sponsorship</option>
+        <option value="needs_sponsorship">Need sponsorship</option>
+      </select>
+    </div>
+
+    <div class="field uni-wrap">
+      <label for="university">University UK</label>
+      <input type="text" id="university" placeholder="Start typing your university…" autocomplete="off" required>
+      <div class="uni-results" id="uniResults"></div>
+      <div class="hint" id="uniHint">University suggestions loaded locally.</div>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" minlength="8" id="password" required>
+    </div>
+
+    <div class="tc-row">
+      <input type="checkbox" id="agreeTerms" required>
+      <div class="tc-text">
+        I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>
+      </div>
+    </div>
+
+    <button type="submit" class="btn" id="signupBtn">Create Account</button>
+
+    <div id="error" class="alert"></div>
+    <div id="success" class="success"></div>
+  </form>
+</div>
+
+<div class="footer-links">
+  Already have an account? <a href="login.html">Login</a>
+</div>
+
+<script>
+/* ------------------ LOCAL SIGNUP LOGIC ------------------ */
+/* Demo only: this saves account data to localStorage in this browser. */
+
+const uniInput = document.getElementById("university");
+const uniResults = document.getElementById("uniResults");
+const uniHint = document.getElementById("uniHint");
+
+const signupForm = document.getElementById("signupForm");
+const signupBtn = document.getElementById("signupBtn");
+const errorBox = document.getElementById("error");
+const successBox = document.getElementById("success");
+
+let activeIdx = -1;
+
+let universities = [
+  "Anglia Ruskin University",
+  "Aston University",
+  "Bangor University",
+  "Birmingham City University",
+  "Bournemouth University",
+  "Brunel University London",
+  "Cardiff University",
+  "City, University of London",
+  "Coventry University",
+  "De Montfort University",
+  "Durham University",
+  "Edge Hill University",
+  "Glasgow Caledonian University",
+  "Goldsmiths, University of London",
+  "Imperial College London",
+  "Keele University",
+  "King's College London",
+  "Kingston University",
+  "Lancaster University",
+  "Leeds Beckett University",
+  "Liverpool John Moores University",
+  "London Metropolitan University",
+  "London South Bank University",
+  "Loughborough University",
+  "Manchester Metropolitan University",
+  "Middlesex University",
+  "Newcastle University",
+  "Northumbria University",
+  "Nottingham Trent University",
+  "Oxford Brookes University",
+  "Queen Mary University of London",
+  "Royal Holloway, University of London",
+  "Sheffield Hallam University",
+  "Solent University",
+  "Swansea University",
+  "Teesside University",
+  "The Open University",
+  "University College London",
+  "University of Aberdeen",
+  "University of Bath",
+  "University of Birmingham",
+  "University of Bradford",
+  "University of Brighton",
+  "University of Bristol",
+  "University of Cambridge",
+  "University of Central Lancashire",
+  "University of Chester",
+  "University of Derby",
+  "University of East Anglia",
+  "University of East London",
+  "University of Edinburgh",
+  "University of Essex",
+  "University of Exeter",
+  "University of Glasgow",
+  "University of Greenwich",
+  "University of Hertfordshire",
+  "University of Huddersfield",
+  "University of Hull",
+  "University of Kent",
+  "University of Leeds",
+  "University of Leicester",
+  "University of Lincoln",
+  "University of Liverpool",
+  "University of Manchester",
+  "University of Northampton",
+  "University of Nottingham",
+  "University of Oxford",
+  "University of Plymouth",
+  "University of Portsmouth",
+  "University of Reading",
+  "University of Roehampton",
+  "University of Salford",
+  "University of Sheffield",
+  "University of Southampton",
+  "University of Sunderland",
+  "University of Surrey",
+  "University of Sussex",
+  "University of the Arts London",
+  "University of Warwick",
+  "University of Westminster",
+  "University of Wolverhampton",
+  "University of York",
+  "University of West London",
+  "University of West of England",
+  "University of Worcester"
+];
+
+function norm(value){
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[’']/g, "'")
+    .replace(/&/g, "and")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function showError(message){
+  errorBox.textContent = message;
+  errorBox.classList.add("show");
+  successBox.classList.remove("show");
+}
+
+function showSuccess(message){
+  successBox.textContent = message;
+  successBox.classList.add("show");
+  errorBox.classList.remove("show");
+}
+
+function getUsers(){
+  const saved = localStorage.getItem("internbuddy_users");
+
+  if(!saved){
+    return [];
+  }
+
+  try{
+    return JSON.parse(saved);
+  }catch(error){
+    return [];
+  }
+}
+
+function saveUsers(users){
+  localStorage.setItem("internbuddy_users", JSON.stringify(users));
+}
+
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function calculateAge(dateString){
+  const today = new Date();
+  const birthDate = new Date(dateString);
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDifference = today.getMonth() - birthDate.getMonth();
+
+  if(monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())){
+    age--;
+  }
+
+  return age;
+}
+
+function scoreUni(query, name){
+  const q = norm(query);
+  const n = norm(name);
+
+  if(!q) return 0;
+  if(n === q) return 1000;
+  if(n.startsWith(q)) return 900;
+
+  const words = n.split(" ");
+
+  for(const word of words){
+    if(word.startsWith(q)) return 850;
+  }
+
+  const index = n.indexOf(q);
+
+  if(index >= 0) return 700 - index;
+
+  const tokens = q.split(" ").filter(Boolean);
+
+  if(tokens.length > 1 && tokens.every(token => n.includes(token))){
+    return 600;
+  }
+
+  return 0;
+}
+
+function closeUni(){
+  uniResults.style.display = "none";
+  uniResults.innerHTML = "";
+  activeIdx = -1;
+}
+
+function renderUniList(items, query){
+  uniResults.innerHTML = "";
+
+  if(!query.trim()){
+    closeUni();
+    return;
+  }
+
+  if(!items.length){
+    const empty = document.createElement("div");
+    empty.className = "uni-empty";
+    empty.textContent = "No matches found. You can still type your university.";
+    uniResults.appendChild(empty);
+    uniResults.style.display = "block";
+    return;
+  }
+
+  items.forEach((name, index) => {
+    const div = document.createElement("div");
+    div.className = "uni-item" + (index === activeIdx ? " active" : "");
+    div.textContent = name;
+
+    div.addEventListener("mousedown", function(e){
+      e.preventDefault();
+      uniInput.value = name;
+      closeUni();
+    });
+
+    uniResults.appendChild(div);
+  });
+
+  uniResults.style.display = "block";
+}
+
+function filterUniversities(query){
+  const q = query.trim();
+
+  if(!q){
+    return [];
+  }
+
+  return universities
+    .map(name => ({
+      name: name,
+      score: scoreUni(q, name)
+    }))
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+    .slice(0, 30)
+    .map(item => item.name);
+}
+
+uniInput.addEventListener("input", function(){
+  const query = uniInput.value;
+  activeIdx = -1;
+
+  const items = filterUniversities(query);
+  renderUniList(items, query);
+});
+
+uniInput.addEventListener("keydown", function(e){
+  const items = Array.from(uniResults.querySelectorAll(".uni-item"));
+
+  if(!items.length){
+    return;
+  }
+
+  if(e.key === "ArrowDown"){
+    e.preventDefault();
+    activeIdx = Math.min(activeIdx + 1, items.length - 1);
+
+    items.forEach((item, index) => {
+      item.classList.toggle("active", index === activeIdx);
+    });
+
+    items[activeIdx]?.scrollIntoView({ block:"nearest" });
+  }
+
+  if(e.key === "ArrowUp"){
+    e.preventDefault();
+    activeIdx = Math.max(activeIdx - 1, 0);
+
+    items.forEach((item, index) => {
+      item.classList.toggle("active", index === activeIdx);
+    });
+
+    items[activeIdx]?.scrollIntoView({ block:"nearest" });
+  }
+
+  if(e.key === "Enter"){
+    const active = items[activeIdx];
+
+    if(active){
+      e.preventDefault();
+      uniInput.value = active.textContent;
+      closeUni();
+    }
+  }
+
+  if(e.key === "Escape"){
+    closeUni();
+  }
+});
+
+document.addEventListener("click", function(e){
+  if(!uniResults.contains(e.target) && e.target !== uniInput){
+    closeUni();
+  }
+});
+
+signupForm.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  errorBox.classList.remove("show");
+  successBox.classList.remove("show");
+
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName = document.getElementById("lastName").value.trim();
+  const email = document.getElementById("email").value.trim().toLowerCase();
+  const phone = document.getElementById("phone").value.trim();
+  const dateOfBirth = document.getElementById("dob").value;
+  const sponsorshipStatus = document.getElementById("sponsorship").value;
+  const university = document.getElementById("university").value.trim();
+  const password = document.getElementById("password").value;
+  const agreeTerms = document.getElementById("agreeTerms").checked;
+
+  if(!firstName || !lastName || !email || !phone || !dateOfBirth || !sponsorshipStatus || !university || !password){
+    showError("Please complete all fields.");
+    return;
+  }
+
+  if(!isValidEmail(email)){
+    showError("Please enter a valid email address.");
+    return;
+  }
+
+  if(password.length < 8){
+    showError("Password must be at least 8 characters.");
+    return;
+  }
+
+  if(calculateAge(dateOfBirth) < 13){
+    showError("You must be at least 13 years old to create an account.");
+    return;
+  }
+
+  if(!agreeTerms){
+    showError("Please agree to the Terms and Conditions.");
+    return;
+  }
+
+  const users = getUsers();
+
+  const existingUser = users.find(user => user.email === email);
+
+  if(existingUser){
+    showError("An account with this email already exists. Please log in instead.");
+    return;
+  }
+
+  const newUser = {
+    id: "user_" + Date.now(),
+    firstName: firstName,
+    lastName: lastName,
+    name: firstName + " " + lastName,
+    email: email,
+    phone: phone,
+    dateOfBirth: dateOfBirth,
+    sponsorshipStatus: sponsorshipStatus,
+    university: university,
+    password: password,
+    accountType: "Student",
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+  saveUsers(users);
+
+  localStorage.setItem("internbuddy_user", JSON.stringify(newUser));
+  localStorage.setItem("internbuddy_token", "local-token-" + Date.now());
+  localStorage.setItem("internbuddy_logged_in", "true");
+
+  signupBtn.disabled = true;
+  signupBtn.textContent = "Account Created";
+
+  showSuccess("Account created successfully. Redirecting to login...");
+
+  setTimeout(function(){
+    window.location.href = "login.html";
+  }, 1200);
+});
+
+window.addEventListener("DOMContentLoaded", function(){
+  uniHint.textContent = "Start typing to search universities. Local demo mode is active.";
+});
+</script>
+
+</body>
+</html>

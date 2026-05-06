@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Sponsor Jobs – InternBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --accent:#4A90E2;
+      --dot:#FF4081;
+      --text:#fff;
+      --muted:#bbb;
+      --border:#444;
+      --card-bg:rgba(34,34,40,0.92);
+      --btn-bg:#4A90E2;
+      --btn-bg-hover:#357abf;
+      --shadow:rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Space Grotesk',sans-serif;
+      background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+      color:var(--text);
+      min-height:100vh;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding:40px 16px;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+      opacity: 0.07;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .home-box {
+      position: fixed;
+      top: 24px;
+      right: 32px;
+      display: inline-block;
+      background: rgba(34,34,40,0.92);
+      color: #4A90E2;
+      font-weight: 700;
+      font-size: 17px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      padding: 14px 32px;
+      text-align: center;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      z-index: 10001;
+    }
+    .home-box:hover {
+      background: #4A90E2;
+      color: #fff;
+      box-shadow: 0 4px 16px #4A90E2aa;
+    }
+    .logo-center{
+      font-size:28px;
+      font-weight:700;
+      letter-spacing:-.5px;
+      margin-bottom:48px;
+      color: var(--accent);
+      text-align: center;
+      z-index: 1;
+      position: relative;
+    }
+    .logo-center span.dot{
+      display:inline-block;
+      width:8px;height:8px;
+      background:var(--dot);
+      border-radius:50%;
+      margin-left:4px;
+      vertical-align: middle;
+    }
+    .card{
+      width:100%;
+      max-width:700px;
+      background:var(--card-bg);
+      border-radius:20px;
+      padding:40px 32px;
+      margin-bottom:24px;
+      box-shadow:0 8px 30px var(--shadow);
+      z-index: 1;
+      position: relative;
+      text-align: center;
+    }
+    .card h2{color:#fff;margin-bottom:8px;font-size:24px}
+    .card p{color:#ddd;margin-bottom:28px;font-size:15px}
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+      justify-content: center;
+    }
+    .filter-bar input {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+      min-width: 180px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .filter-bar input::placeholder { color: #bbb; }
+    .filter-bar .btn {
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: none;
+      background: var(--btn-bg);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .filter-bar .btn:hover { background: var(--btn-bg-hover); }
+    #job-results {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      margin-top: 24px;
+    }
+    .job-card {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 22px 20px 16px 20px;
+      margin-bottom: 18px;
+      text-align: left;
+      transition: box-shadow 0.18s;
+      word-break: break-word;
+    }
+    .job-card strong { font-size: 18px; }
+    .job-card a {
+      color: #FF4081;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 8px;
+      display: inline-block;
+    }
+    .job-card a:hover { text-decoration: underline; }
+
+    /* Mobile responsiveness */
+    @media (max-width:900px){
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-bar input, .filter-bar .btn {
+        width: 100%;
+      }
+    }
+    @media (max-width:600px){
+      .card{padding:24px 16px;}
+      .logo-center{font-size:22px;margin-bottom:32px;}
+      .home-box{
+        top: 10px;
+        right: 10px;
+        padding: 10px 16px;
+        font-size: 15px;
+      }
+      #job-results { padding: 0 2px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="home-box">Home</a>
+  <div class="logo-center">
+    InternBuddy<span class="dot"></span>
+  </div>
+
+  <div class="card">
+    <h2>All Sponsor Jobs</h2>
+    <p>Browse all available jobs from companies that sponsor visas. Use the filters below to narrow your search.</p>
+    <div class="filter-bar">
+      <input type="text" id="filter-field" placeholder="Degree/Field (e.g. Computer Science)">
+      <input type="text" id="filter-title" placeholder="Job Title (e.g. Engineer)">
+      <input type="text" id="filter-location" placeholder="Location (e.g. London)">
+      <button class="btn" onclick="applyFilter()">Filter</button>
+      <button class="btn" onclick="resetFilter()" style="background:#bbb;color:#222;margin-left:8px;">Reset</button>
+    </div>
+    <div id="job-results">Loading jobs...</div>
+  </div>
+
+  <script>
+    let allJobs = [];
+    async function showAllSponsorJobs() {
+      const res = await fetch('/api/sponsor-jobs');
+      allJobs = await res.json();
+      renderJobs(allJobs);
+    }
+    function renderJobs(jobs) {
+      const container = document.getElementById('job-results');
+      if (!jobs.length) {
+        container.innerHTML = '<div style="color:#FF4081;">No sponsor jobs found.</div>';
+        return;
+      }
+      container.innerHTML = jobs.map(j => `
+        <div class="job-card">
+          <strong>${j.title}</strong><br>
+          <span style="color:#4A90E2;">${j.company}, ${j.location}</span><br>
+          <span style="font-size:13px;color:#bbb;">${j.field}</span><br>
+          <a href="${j.url}" target="_blank">Apply</a>
+        </div>
+      `).join('');
+    }
+    function applyFilter() {
+      const field = document.getElementById('filter-field').value.trim().toLowerCase();
+      const title = document.getElementById('filter-title').value.trim().toLowerCase();
+      const location = document.getElementById('filter-location').value.trim().toLowerCase();
+      const filtered = allJobs.filter(j =>
+        (!field || (j.field && j.field.toLowerCase().includes(field))) &&
+        (!title || (j.title && j.title.toLowerCase().includes(title))) &&
+        (!location || (j.location && j.location.toLowerCase().includes(location)))
+      );
+      renderJobs(filtered);
+    }
+    function resetFilter() {
+      document.getElementById('filter-field').value = '';
+      document.getElementById('filter-title').value = '';
+      document.getElementById('filter-location').value = '';
+      renderJobs(allJobs);
+    }
+    showAllSponsorJobs();
+  </script>
+<div class="terms-link" style="text-align:center;margin:24px 0;font-weight:700;">
+  <a href="terms-and-conditions.html" style="color:#1e90ff;text-decoration:none;">Terms and Conditions</a>
+</div></body>
+</html>
+
+

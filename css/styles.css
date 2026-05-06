@@ -1,0 +1,473 @@
+/* General Styles */
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+    color: #fff;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Subtle pattern overlay */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Header/Nav: Black background, white links, blue InternBuddy */
+header {
+    background: #111;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo {
+    font-size: 2em;
+    font-weight: 700;
+    color: #4A90E2 !important; /* Always blue */
+    letter-spacing: 1px;
+}
+
+.logo-dot {
+    color: #FF4081;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff !important; /* White links */
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #4A90E2 !important;
+}
+
+main {
+    padding: 40px 0;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: auto;
+}
+
+/* Hero Section: Centered text, no image */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #4A90E2, #90CAF9);
+    color: #fff;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.hero-content {
+    flex: 1;
+    text-align: center;
+}
+
+.hero-image {
+    display: none; /* Remove the image */
+}
+
+h1 {
+    font-size: 3em;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.2em;
+    color: #eee;
+    margin-bottom: 30px;
+}
+
+.features {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center features */
+    margin-top: 20px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.feature-icon {
+    width: 24px;
+    height: 24px;
+    color: #FF4081;
+    margin-right: 10px;
+}
+
+.feature-text {
+    font-size: 1.1em;
+    color: #eee;
+}
+
+/* Glassy Container Styles (for login, signup, onboarding, edit profile, etc.) */
+.glass-container,
+.login-container,
+.signup-container,
+.onboarding-container,
+.edit-profile-container {
+    background: rgba(34, 34, 40, 0.92);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    padding: 40px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
+}
+
+.login-header,
+.signup-header,
+.onboarding-header,
+.edit-profile-header {
+    margin-bottom: 30px;
+}
+
+.divider {
+    font-size: 0.9em;
+    color: #999;
+    margin: 20px 0;
+    text-transform: uppercase;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-size: 0.9em;
+    color: #bbb;
+    margin-bottom: 5px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="file"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-size: 1em;
+    color: #fff;
+    background: rgba(34, 34, 40, 0.7);
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+    margin-bottom: 10px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #4A90E2;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: #357abf;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-google {
+    background-color: #fff;
+    color: #4285F4;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.btn-google svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    fill: #4285F4;
+}
+
+.btn-google:hover {
+    background-color: #f5f5f5;
+}
+
+/* Link Styles */
+.signup-link {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #bbb;
+}
+
+.signup-link a {
+    color: #4A90E2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile Navigation */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.hamburger svg {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #111;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        z-index: 99;
+    }
+
+    .nav-links ul {
+        flex-direction: column;
+    }
+
+    .nav-links ul li {
+        margin: 10px 0;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .nav-links.active {
+        display: block;
+    }
+
+    nav {
+        padding: 0 10px;
+    }
+}
+
+/* Responsive: Center hero text on mobile */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    .hero-content {
+        text-align: center;
+    }
+    .features {
+        align-items: center;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    p {
+        font-size: 1em;
+    }
+    .glass-container,
+    .login-container,
+    .signup-container,
+    .onboarding-container,
+    .edit-profile-container {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 20px;
+    }
+    .hero-content {
+        text-align: center;
+    }
+    .features {
+        align-items: center;
+    }
+    nav .logo {
+        font-size: 1.5em;
+    }
+}
+
+/* About Us Page Styles */
+.about-us {
+    padding: 40px;
+    background: rgba(34, 34, 40, 0.92);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    margin-bottom: 40px;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+}
+
+.about-us h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.about-us h2 {
+    font-size: 1.8em;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #4A90E2;
+}
+
+.about-us p {
+    font-size: 1.1em;
+    line-height: 1.7;
+    color: #eee;
+}
+
+.about-us a {
+    color: #4A90E2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.about-us a:hover {
+    text-decoration: underline;
+}
+
+/* About Section Styles - Small image left, text right */
+.about-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.about-image {
+    flex: 0 0 120px;
+    max-width: 120px;
+}
+
+.about-image img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: block;
+}
+
+.about-text {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 600px) {
+    .about-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .about-image {
+        margin-bottom: 16px;
+        max-width: 100px;
+    }
+    .about-image img {
+        height: 100px;
+    }
+    .about-text {
+        text-align: center;
+    }
+}

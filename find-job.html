@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy – Find a New Job</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --shadow:rgba(0,0,0,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+}
+.home-box {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  display: inline-block;
+  background: rgba(34,34,40,0.92);
+  color: #4A90E2;
+  font-weight: 700;
+  font-size: 17px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  padding: 14px 32px;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  z-index: 10001;
+}
+.home-box:hover {
+  background: #4A90E2;
+  color: #fff;
+  box-shadow: 0 4px 16px #4A90E2aa;
+}
+.logo-center{
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  margin-bottom:48px;
+  color: var(--accent);
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+.logo-center span.dot{
+  display:inline-block;
+  width:8px;height:8px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:4px;
+  vertical-align: middle;
+}
+.card{
+  width:100%;
+  max-width:480px;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:40px 32px;
+  margin-bottom:24px;
+  box-shadow:0 8px 30px var(--shadow);
+  z-index: 1;
+  position: relative;
+  text-align: center;
+}
+.card h2{color:#fff;margin-bottom:8px;font-size:24px}
+.card p{color:#ddd;margin-bottom:28px;font-size:15px}
+.summary-list {
+  text-align: left;
+  margin: 0 auto 24px auto;
+  max-width: 100%;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 18px;
+  color: #eee;
+  font-size: 15px;
+  box-shadow: 0 2px 8px var(--shadow);
+  word-break: break-word;
+}
+.summary-list strong { color: #4A90E2; }
+.summary-list a { color: #4A90E2; word-break: break-word; text-decoration: underline; }
+.btn{
+  margin-top:18px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  background:var(--btn-bg);
+  color:#fff;
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  transition: background 0.2s;
+}
+.btn:hover { background: var(--btn-bg-hover); }
+@media (max-width:600px){
+  .card{padding:24px 12px;}
+  .logo-center{font-size:22px;margin-bottom:32px;}
+  .home-box{
+    top: 10px;
+    right: 10px;
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+}
+</style>
+</head>
+<body>
+<a href="homepage.html" class="home-box">Home</a>
+<div class="logo-center">InternBuddy<span class="dot"></span></div>
+
+<div class="card" id="find-job-card">
+  <h2>Ready to find your next role?</h2>
+  <p id="greeting"></p>
+  <div class="summary-list" id="summary-list"></div>
+  <button class="btn" onclick="startJobSearch()">Show me jobs!</button>
+</div>
+
+<script>
+  // Load profile/onboarding data
+  const data = {
+    ...JSON.parse(localStorage.getItem('internbuddy-signup') || '{}'),
+    ...JSON.parse(localStorage.getItem('internbuddy-profile') || '{}')
+  };
+
+  // Personal greeting
+  const greetingEl = document.getElementById('greeting');
+  if(data.firstName && data.studyField){
+    greetingEl.innerHTML = `Hi <strong>${data.firstName}</strong>! We'll find the best <strong>${data.studyField}</strong> roles for you.`;
+  } else if(data.firstName){
+    greetingEl.innerHTML = `Hi <strong>${data.firstName}</strong>!`;
+  } else {
+    greetingEl.textContent = "Let's get started!";
+  }
+
+  // Show summary of preferences
+  const summaryEl = document.getElementById('summary-list');
+  let summaryHTML = '';
+  if(data.roleType) summaryHTML += `<div><strong>Role type:</strong> ${data.roleType}</div>`;
+  if(data.locations) summaryHTML += `<div><strong>Preferred location(s):</strong> ${data.locations}</div>`;
+  if(data.gradYear) summaryHTML += `<div><strong>Graduation year:</strong> ${data.gradYear}</div>`;
+  if(data.workAuth) summaryHTML += `<div><strong>Work authorisation:</strong> ${data.workAuth}</div>`;
+  if(data.linkedin) summaryHTML += `<div><strong>LinkedIn:</strong> <a href="${data.linkedin}" target="_blank">${data.linkedin}</a></div>`;
+  if(!summaryHTML) summaryHTML = '<div style="color:#FF4081;">No preferences found. Please update your profile!</div>';
+  summaryEl.innerHTML = summaryHTML;
+
+  function startJobSearch(){
+    location.href = 'job-results.html';
+  }
+</script>
+<div class="terms-link" style="text-align:center;margin:24px 0;font-weight:700;">
+  <a href="terms-and-conditions.html" style="color:#1e90ff;text-decoration:none;">Terms and Conditions</a>
+</div></body>
+</html>
+
+

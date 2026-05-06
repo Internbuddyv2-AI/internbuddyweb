@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>InternBuddy | Application Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#4A90E2;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --card-bg:rgba(34,34,40,0.92);
+  --btn-bg:#4A90E2;
+  --btn-bg-hover:#357abf;
+  --shadow:rgba(0,0,0,.18);
+  --status-red:#ff4d4d;
+  --status-orange:#ffa500;
+  --status-lightgreen:#9acd32;
+  --status-green:#28a745;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background: linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+}
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky;top:0;z-index:10;
+  flex-wrap:wrap;
+}
+.logo{font-size:22px;font-weight:700;color: var(--accent);}
+.logo span.dot{width:6px;height:6px;background:var(--dot);border-radius:50%;display:inline-block;margin-left:3px;vertical-align: middle;}
+nav{display:flex;align-items:center;flex-wrap:wrap;}
+nav a{margin-left:24px;color:var(--text);text-decoration:none;font-weight:500;transition: color 0.2s;}
+nav a.btn{background:var(--btn-bg);color:#fff;padding:8px 20px;border-radius:8px;margin-left:32px;transition: background 0.2s;}
+nav a:hover, nav a.btn:hover{color: var(--accent);background:#fff;}
+nav a.btn:hover{color:var(--btn-bg);background:#fff;}
+main{max-width:1100px;margin:0 auto;padding:60px 20px;}
+.tracker-container{
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 16px var(--shadow);
+  overflow-x:auto;
+}
+.tracker-container h1{font-size:28px;margin-bottom:6px;color:#fff;}
+.tracker-subtitle{
+  font-size:14px;
+  color:var(--muted);
+  margin-bottom:18px;
+}
+.add-job-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+.add-job-btn{
+  padding:10px 22px;
+  background:var(--btn-bg);
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-weight:600;
+  cursor:pointer;
+  transition: background 0.2s;
+}
+.add-job-btn:hover{background:var(--btn-bg-hover);}
+.api-hint{
+  font-size:12px;
+  color:var(--muted);
+}
+.api-hint code{
+  background:#111;
+  padding:2px 4px;
+  border-radius:4px;
+  font-size:11px;
+}
+
+/* smart paste area (optional) */
+.smart-add{
+  margin-bottom:18px;
+  background:rgba(0,0,0,0.25);
+  border-radius:12px;
+  padding:12px;
+}
+.smart-add-label{
+  font-size:13px;
+  margin-bottom:6px;
+  color:#fff;
+}
+.smart-add textarea{
+  width:100%;
+  min-height:70px;
+  resize:vertical;
+  padding:8px 10px;
+  border-radius:8px;
+  border:none;
+  background:#222;
+  color:#fff;
+  font-family:inherit;
+  font-size:13px;
+  margin-bottom:8px;
+}
+.smart-add-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+}
+.smart-add-row input{
+  flex:1;
+  padding:6px 8px;
+  border-radius:8px;
+  border:none;
+  background:#222;
+  color:#fff;
+  font-family:inherit;
+  font-size:13px;
+}
+.smart-add small{
+  display:block;
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* table */
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:rgba(34,34,40,0.85);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 8px var(--shadow);
+  min-width:800px;
+}
+thead{background:var(--btn-bg);color:#fff;}
+th,td{padding:12px 16px;text-align:left;color:#fff;font-size:14px;}
+tbody tr:nth-child(even){background:rgba(255,255,255,0.04);}
+tbody tr:hover{background:rgba(255,255,255,0.08);}
+td input{
+  width:100%;
+  padding:6px;
+  border-radius:6px;
+  border:none;
+  background:#222;
+  color:#fff;
+  font-size:13px;
+}
+td select{
+  padding:6px;
+  border-radius:6px;
+  border:none;
+  background:#222;
+  color:#fff;
+  font-weight:600;
+  font-size:13px;
+}
+td select option[value="Haven't Heard Back"]{color:var(--status-red);}
+td select option[value="Interview"]{color:var(--status-orange);}
+td select option[value="Offer"]{color:var(--status-lightgreen);}
+td select option[value="Accepted"]{color:var(--status-green);}
+td button{
+  margin:2px 2px 2px 0;
+  padding:4px 6px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+  background:var(--btn-bg);
+  color:#fff;
+}
+td button:hover{background:var(--btn-bg-hover);}
+
+.link-cell{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.link-cell input{
+  flex:1;
+}
+.link-cell button{
+  white-space:nowrap;
+  padding:4px 8px;
+  font-size:11px;
+}
+
+/* Responsive */
+@media(max-width:900px){
+  header{padding:16px 16px;justify-content:center;gap:8px;}
+  .logo{font-size:20px;}
+  nav a{margin:6px 8px;}
+}
+@media(max-width:600px){
+  main{padding:24px 12px;}
+  .tracker-container{padding:16px;}
+  th,td{padding:8px 10px;font-size:13px;}
+  .add-job-btn{padding:8px 16px;font-size:14px;}
+  table{min-width:100%;display:block;overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">InternBuddy<span class="dot"></span></div>
+  <nav>
+    <a href="homepage.html">Dashboard</a>
+    <a href="edit-profile.html">Profile</a>
+    <a href="index.html" class="btn">Logout</a>
+  </nav>
+</header>
+
+<main>
+<div class="tracker-container">
+  <h1>Application Tracker</h1>
+  <p class="tracker-subtitle">
+    Automatically log roles you view or apply to. Include company, location, job title and salary range in one place.
+  </p>
+
+  <div class="add-job-bar">
+    <button class="add-job-btn" onclick="addApplication()">+ Add Application</button>
+    <div class="api-hint">
+      Hook from your job search pages using:
+      <code>JobTracker.addFromJobObject({...})</code>
+    </div>
+  </div>
+
+  <!-- Optional smart paste from description (for manual testing) -->
+  <div class="smart-add">
+    <div class="smart-add-label">Smart add from job description (optional)</div>
+    <textarea id="jdText" placeholder="Paste the job description here..."></textarea>
+    <div class="smart-add-row">
+      <input id="jdTitle" type="text" placeholder="Job title (optional)">
+      <input id="jdCompany" type="text" placeholder="Company (optional)">
+      <input id="jdLocation" type="text" placeholder="Location (optional)">
+    </div>
+    <button class="add-job-btn" style="margin-bottom:6px;" onclick="smartAddFromDescriptionUI()">Smart add</button>
+    <small>We’ll try to detect the salary / pay range automatically from the description.</small>
+  </div>
+
+  <table id="appTable">
+    <thead>
+      <tr>
+        <th>Job Title</th>
+        <th>Company</th>
+        <th>Location</th>
+        <th>Salary&nbsp;/&nbsp;Range</th>
+        <th>Date Applied</th>
+        <th>Status</th>
+        <th>Job Link</th>
+        <th>Remove</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+</main>
+
+<script>
+const STORAGE_KEY = 'internbuddy-applications-v2';
+
+// ---- Salary extraction from description ----
+function extractSalaryFromText(text){
+  if(!text) return '';
+  const t = text.replace(/\s+/g,' ');
+  // £40,000 - £50,000 / $40,000–50,000 / €40,000 to 50,000
+  const currencyRange = t.match(/(?:£|\$|€)\s?\d[\d,]*(?:\s?(?:-|to|–|—)\s?(?:£|\$|€)?\s?\d[\d,]*)/i);
+  if(currencyRange) return currencyRange[0].trim();
+
+  // 40k - 50k / 40k–50k / 40k to 50k
+  const kRange = t.match(/\b\d{2,3}\s?k\s?(?:-|to|–|—)\s?\d{2,3}\s?k\b/i);
+  if(kRange) return kRange[0].trim();
+
+  // £45,000 per year / $45,000 a year / €45,000 pa
+  const singleAnnual = t.match(/(?:£|\$|€)\s?\d[\d,]*\s?(?:per year|a year|pa|p\.a\.|annual)/i);
+  if(singleAnnual) return singleAnnual[0].trim();
+
+  // 45k per year
+  const singleKAnnual = t.match(/\b\d{2,3}\s?k\s?(?:per year|a year|pa|p\.a\.|annual)\b/i);
+  if(singleKAnnual) return singleKAnnual[0].trim();
+
+  return '';
+}
+
+// ---- Table / DOM helpers ----
+function addApplication(app = {}) {
+  const tbody = document.getElementById("appTable").querySelector("tbody");
+  const tr = document.createElement("tr");
+
+  const dateDefault = app.date || new Date().toISOString().slice(0,10);
+
+  tr.innerHTML = `
+    <td>
+      <input type="text" name="title" placeholder="Job Title" value="${app.title || ''}" oninput="saveApplications()">
+    </td>
+    <td>
+      <input type="text" name="company" placeholder="Company" value="${app.company || ''}" oninput="saveApplications()">
+    </td>
+    <td>
+      <input type="text" name="location" placeholder="Location" value="${app.location || ''}" oninput="saveApplications()">
+    </td>
+    <td>
+      <input type="text" name="salary" placeholder="e.g. £35k–£45k" value="${app.salary || ''}" oninput="saveApplications()">
+    </td>
+    <td>
+      <input type="date" name="date" value="${dateDefault}" onchange="saveApplications()">
+    </td>
+    <td>
+      <select name="status" onchange="updateStatus(this)">
+        <option value="">Select</option>
+        <option value="Haven't Heard Back" ${app.status==="Haven't Heard Back"?'selected':''}>Haven't Heard Back</option>
+        <option value="Interview" ${app.status==="Interview"?'selected':''}>Interview</option>
+        <option value="Offer" ${app.status==="Offer"?'selected':''}>Offer</option>
+        <option value="Accepted" ${app.status==="Accepted"?'selected':''}>Accepted</option>
+      </select>
+    </td>
+    <td>
+      <div class="link-cell">
+        <input type="url" name="link" placeholder="https://job-link" value="${app.link || ''}" oninput="saveApplications()">
+        <button type="button" onclick="openJobLink(this)">Open</button>
+      </div>
+    </td>
+    <td>
+      <button onclick="removeApplication(this)">Remove</button>
+    </td>
+  `;
+
+  tbody.appendChild(tr);
+
+  // apply status color
+  const select = tr.querySelector('select[name="status"]');
+  if (select) updateStatus(select);
+
+  saveApplications();
+}
+
+function updateStatus(select){
+  const value = select.value;
+  if(value==="Haven't Heard Back") select.style.color='var(--status-red)';
+  else if(value==="Interview") select.style.color='var(--status-orange)';
+  else if(value==="Offer") select.style.color='var(--status-lightgreen)';
+  else if(value==="Accepted") select.style.color='var(--status-green)';
+  else select.style.color='#fff';
+  saveApplications();
+}
+
+function removeApplication(btn){
+  btn.closest("tr").remove();
+  saveApplications();
+}
+
+function openJobLink(btn){
+  const row = btn.closest("tr");
+  const input = row.querySelector('input[name="link"]');
+  if(!input || !input.value) return;
+  window.open(input.value, '_blank');
+}
+
+// ---- Persistence ----
+function saveApplications(){
+  const tbody = document.getElementById("appTable").querySelector("tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  const apps = rows.map(row=>{
+    return {
+      title: row.querySelector('input[name="title"]').value,
+      company: row.querySelector('input[name="company"]').value,
+      location: row.querySelector('input[name="location"]').value,
+      salary: row.querySelector('input[name="salary"]').value,
+      date: row.querySelector('input[name="date"]').value,
+      status: row.querySelector('select[name="status"]').value,
+      link: row.querySelector('input[name="link"]').value
+    };
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(apps));
+}
+
+function loadApplications(){
+  const savedApps = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const tbody = document.getElementById("appTable").querySelector("tbody");
+  tbody.innerHTML = '';
+  savedApps.forEach(app => addApplication(app));
+}
+
+// ---- Smart add from UI (paste job description) ----
+function smartAddFromDescriptionUI(){
+  const desc = document.getElementById('jdText').value;
+  const title = document.getElementById('jdTitle').value.trim();
+  const company = document.getElementById('jdCompany').value.trim();
+  const location = document.getElementById('jdLocation').value.trim();
+  if(!desc && !title && !company){
+    alert('Add at least a description, job title or company.');
+    return;
+  }
+  const salary = extractSalaryFromText(desc);
+  const app = {
+    title,
+    company,
+    location,
+    salary,
+    date: new Date().toISOString().slice(0,10),
+    status: "Haven't Heard Back",
+    link: ''
+  };
+  addApplication(app);
+  // optional: clear fields
+  // document.getElementById('jdText').value = '';
+}
+
+// ---- Public API for your other pages ----
+// Usage from any job search/apply page (same domain):
+// JobTracker.addFromJobObject({
+//   title: 'Frontend Engineer',
+//   company: 'Acme Corp',
+//   location: 'London, UK',
+//   salary: '£45,000 – £55,000', // optional
+//   url: 'https://job-board.com/acme/frontend-engineer',
+//   description: 'Full job description text...' // used to extract salary if not provided
+// });
+window.JobTracker = {
+  addFromJobObject(job){
+    const salary = job.salary || extractSalaryFromText(job.description || '');
+    const app = {
+      title: job.title || '',
+      company: job.company || '',
+      location: job.location || '',
+      salary,
+      date: job.dateApplied || new Date().toISOString().slice(0,10),
+      status: job.status || "Haven't Heard Back",
+      link: job.url || job.link || ''
+    };
+    addApplication(app);
+  },
+  // convenience for description-only cases
+  addFromDescription({description, title, company, location, url}){
+    const salary = extractSalaryFromText(description || '');
+    const app = {
+      title: title || '',
+      company: company || '',
+      location: location || '',
+      salary,
+      date: new Date().toISOString().slice(0,10),
+      status: "Haven't Heard Back",
+      link: url || ''
+    };
+    addApplication(app);
+  },
+  getAll(){
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  }
+};
+
+// ---- Init ----
+window.onload = () => {
+  loadApplications();
+};
+</script>
+<div class="terms-link" style="text-align:center;margin:24px 0;font-weight:700;">
+  <a href="terms-and-conditions.html" style="color:#1e90ff;text-decoration:none;">Terms and Conditions</a>
+</div></body>
+</html>
+
+

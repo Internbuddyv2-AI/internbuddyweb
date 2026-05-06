@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InternBuddy | Mock Interview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/interview.css" />
+</head>
+<body>
+  <div class="hero">
+    <div class="particles" id="particles"></div>
+
+    <header>
+      <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
+      <nav>
+        <a href="homepage.html">Dashboard</a>
+        <a href="interview-prep.html">Interview Prep</a>
+        <a href="index.html">Logout</a>
+      </nav>
+    </header>
+
+    <div class="container">
+      <div class="top">
+        <h1>AI Mock Interview</h1>
+        <p>3D interviewer + realistic voice + “say this instead” coaching.</p>
+      </div>
+
+      <div class="panels">
+        <div class="video-panel">
+          <h3>AI Interviewer</h3>
+          <div class="ai-portrait" id="aiPortrait">
+            <div id="avatarStage" style="width:100%;height:100%"></div>
+
+            <div class="voice-bar quiet" id="voiceBar">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="video-panel">
+          <h3>Your Camera</h3>
+          <!-- ✅ muted stops mic feedback -->
+          <video id="webcam" autoplay playsinline muted></video>
+        </div>
+      </div>
+
+      <div class="card interview-panel">
+        <div id="question">Click “Start Interview” to begin.</div>
+
+        <div class="row" style="justify-content:center;margin-top:14px;">
+          <button class="btn primary" id="startBtn" type="button">Start Interview</button>
+          <button class="btn secondary" id="stopBtn" type="button" disabled>Stop Listening</button>
+          <button class="btn secondary" id="nextBtn" type="button" disabled>Next Question</button>
+        </div>
+
+        <div id="status">Ready.</div>
+
+        <div style="margin-top:14px;">
+          <div class="label">Transcript (what you said)</div>
+          <textarea id="transcript" placeholder="Your speech transcript will appear here..."></textarea>
+        </div>
+
+        <div class="feedbackWrap">
+          <h2 style="text-align:center;margin:16px 0 10px;">AI Feedback</h2>
+          <div id="feedback"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="terms-bar">
+      <a href="terms-and-conditions.html">Terms and Conditions</a>
+    </div>
+  </div>
+
+  <!-- ✅ Classic scripts (more reliable locally) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script src="/interview.js"></script>
+</body>
+</html>

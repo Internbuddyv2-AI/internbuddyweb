@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InternBuddy</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent: #4A90E2;
+  --dot: #FF4081;
+  --text: #fff;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body, html { height: 100%; font-family: 'Space Grotesk', sans-serif; background: #111; }
+
+/* Hero full screen */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg,#232526 0%,#3a6186 50%,#89253e 100%);
+  overflow: hidden;
+}
+
+/* Floating shapes */
+.particles {
+  position: absolute;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: float infinite ease-in-out alternate;
+}
+@keyframes float {
+  0% { transform: translateY(0px) translateX(0px) scale(1); }
+  50% { transform: translateY(-80px) translateX(50px) scale(1.2); }
+  100% { transform: translateY(0px) translateX(0px) scale(1); }
+}
+
+/* Top nav */
+header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  z-index: 2;
+}
+header .logo {
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+header .logo span.logo-dot {
+  display:inline-block;
+  width:8px;
+  height:8px;
+  background: var(--dot);
+  border-radius: 50%;
+  box-shadow: 0 0 8px #FF4081, 0 0 16px #FF4081;
+}
+header .nav-links a {
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+  transition: color 0.2s;
+  font-size: 1.1rem;
+}
+header .nav-links a:hover {
+  color: var(--accent);
+}
+
+/* Central content perfectly centered */
+.central-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1;
+  padding: 0 14px;
+}
+.central-container .logo {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--accent);
+  text-shadow: 0 0 20px #4A90E2, 0 0 40px #4A90E2, 0 0 60px #FF4081;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  user-select:none;
+}
+.central-container .logo span.logo-dot {
+  display:inline-block;
+  width:12px; height:12px;
+  background: var(--dot);
+  border-radius:50%;
+  vertical-align:middle;
+  box-shadow:0 0 12px #FF4081,0 0 24px #FF4081;
+}
+.central-container h1 {
+  margin-top: 20px;
+  font-size: 2rem;
+  color: #fff;
+  text-shadow:0 0 8px #fff;
+}
+.cta-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 16px 48px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 12px;
+  background: var(--accent);
+  box-shadow: 0 0 20px var(--accent), 0 0 40px var(--dot);
+  transition: all 0.3s ease, transform 0.3s ease;
+}
+.cta-btn:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 0 40px var(--accent), 0 0 80px var(--dot);
+}
+
+/* Fixed bottom terms bar (prevents the “scroll weirdness”) */
+.terms-bar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 3;
+  display:flex;
+  justify-content:center;
+  padding: 14px 10px;
+  background: rgba(0,0,0,0.35);
+  border-top: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+}
+.terms-bar a {
+  color:#1e90ff;
+  text-decoration:none;
+  font-weight:700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(74,144,226,0.14);
+  border: 1px solid rgba(74,144,226,0.35);
+  transition: all .2s ease;
+}
+.terms-bar a:hover {
+  background:#fff;
+  color: var(--accent);
+}
+
+/* Responsive adjustments */
+@media(max-width:768px){
+  header { padding: 16px 18px; }
+  header .logo { font-size: 1.6rem; }
+  header .nav-links a { font-size: 1rem; }
+
+  .central-container .logo { font-size: 3.5rem; }
+  .central-container h1 { font-size: 1.5rem; margin-top:15px; }
+  .cta-btn { padding: 14px 36px; font-size:1.2rem; }
+}
+@media(max-width:480px){
+  .central-container .logo { font-size: 2.8rem; }
+  .central-container h1 { font-size: 1.2rem; margin-top:10px; }
+  .cta-btn { padding: 12px 28px; font-size:1rem; }
+}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="particles" id="particles"></div>
+
+  <header>
+    <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
+    <div class="nav-links">
+      <a href="about.html">About Us</a>
+    </div>
+  </header>
+
+  <div class="central-container">
+    <div class="logo">InternBuddy<span class="logo-dot"></span></div>
+    <h1>Your Career Co-Pilot</h1>
+    <a href="login.html" class="cta-btn">Get Started</a>
+  </div>
+
+  <div class="terms-bar">
+    <a href="terms-and-conditions.html">Terms and Conditions</a>
+  </div>
+</div>
+
+<script>
+  // Make top logo clickable
+  document.getElementById('homeLogo').addEventListener('click', () => {
+    window.location.href = 'index.html';
+  });
+
+  // Floating shapes
+  const colors = ['#4A90E2','#FF4081','#fff'];
+  for(let i=0;i<25;i++){
+    const shape=document.createElement('div');
+    shape.classList.add('shape');
+    const size = Math.random()*30+20;
+    shape.style.width = shape.style.height = size+'px';
+    shape.style.background = colors[Math.floor(Math.random()*colors.length)];
+    shape.style.left = Math.random()*100+'%';
+    shape.style.top = Math.random()*100+'%';
+    shape.style.animationDuration = (Math.random()*8+5)+'s';
+    shape.style.animationDelay = (Math.random()*5)+'s';
+    shape.style.opacity = (Math.random()*0.5+0.3);
+    document.getElementById('particles').appendChild(shape);
+  }
+</script>
+</body>
+</html>
