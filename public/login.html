@@ -242,30 +242,14 @@ input:focus{
 <script>
 /* ------------------ INTERNBUDDY LOGIN LOGIC ------------------ */
 /*
-  This login expects signup.html to save users inside:
-  localStorage["internbuddy_users"]
-
-  Each user should look like:
-  {
-    id,
-    firstName,
-    lastName,
-    name,
-    email,
-    password,
-    university,
-    course,
-    accountType,
-    sponsorshipStatus,
-    needsSponsorship
-  }
+  Login always redirects to homepage.html.
+  Sponsorship status is still saved in the user profile, so homepage.html can show sponsorship content there.
 */
 
 const DEMO_EMAIL = "kleviszaimi73@gmail.com";
 const DEMO_PASSWORD = "demo123";
 
 const DEFAULT_PAGE = "homepage.html";
-const SPONSORSHIP_PAGE = "all-sponsor-jobs.html";
 
 const loginForm = document.getElementById("loginForm");
 const loginEmail = document.getElementById("loginEmail");
@@ -315,83 +299,35 @@ function normaliseUser(user){
   const lastName = user.lastName || user.lastname || "";
   const fullName = user.name || `${firstName} ${lastName}`.trim() || user.email || "InternBuddy User";
 
+  const sponsorshipStatus = user.sponsorshipStatus || user.sponsorship || user.workAuth || "not_set";
+  const needsSponsorship =
+    user.needsSponsorship === true ||
+    sponsorshipStatus === "needs_sponsorship";
+
   return {
     id: user.id || "user_" + Date.now(),
     firstName: firstName,
     lastName: lastName,
     name: fullName,
-    email: (user.email || "").toLowerCase(),
+    email: String(user.email || "").toLowerCase(),
     password: user.password || "",
     accountType: user.accountType || user.role || "Student",
     university: user.university || user.school || "",
     course: user.course || user.degree || "",
+    studyField: user.studyField || user.course || user.degree || "",
     phone: user.phone || "",
     location: user.location || "",
-    sponsorshipStatus: user.sponsorshipStatus || user.sponsorship || "not_set",
-    needsSponsorship: Boolean(user.needsSponsorship),
+    locations: user.locations || "United Kingdom",
+    sponsorshipStatus: sponsorshipStatus,
+    needsSponsorship: needsSponsorship,
+    workAuth: sponsorshipStatus,
+    roleType: user.roleType || "",
+    targetIndustries: user.targetIndustries || "",
     cvData: user.cvData || {},
     tracker: user.tracker || [],
     createdAt: user.createdAt || new Date().toISOString(),
     lastLoginAt: new Date().toISOString()
   };
-}
-
-function userNeedsSponsorship(user){
-  if(user.needsSponsorship === true){
-    return true;
-  }
-
-  const rawStatus = String(
-    user.sponsorshipStatus ||
-    user.sponsorship ||
-    user.visaStatus ||
-    ""
-  ).toLowerCase().trim();
-
-  const noValues = [
-    "no",
-    "none",
-    "false",
-    "not needed",
-    "not_needed",
-    "no sponsorship",
-    "no_sponsorship",
-    "does not need sponsorship",
-    "does_not_need_sponsorship",
-    "uk citizen",
-    "british citizen",
-    "settled",
-    "settled status"
-  ];
-
-  if(noValues.includes(rawStatus)){
-    return false;
-  }
-
-  const yesValues = [
-    "yes",
-    "true",
-    "needed",
-    "need",
-    "needs sponsorship",
-    "needs_sponsorship",
-    "requires sponsorship",
-    "requires_sponsorship",
-    "visa sponsorship",
-    "visa_sponsorship",
-    "skilled worker",
-    "student visa",
-    "graduate visa"
-  ];
-
-  if(yesValues.includes(rawStatus)){
-    return true;
-  }
-
-  return rawStatus.includes("need") ||
-         rawStatus.includes("require") ||
-         rawStatus.includes("visa") ||
-         rawStatus.includes("sponsor");
 }
 
 function saveActiveUser(user){
@@ -401,6 +337,12 @@ function saveActiveUser(user){
   localStorage.setItem("internbuddy_profile", JSON.stringify(cleanedUser));
   localStorage.setItem("internbuddy_logged_in", "true");
   localStorage.setItem("internbuddy_token", "local-token-" + Date.now());
+
+  /*
+    Backward compatibility for any older pages still using these names.
+  */
+  localStorage.setItem("internbuddy-signup", JSON.stringify(cleanedUser));
+  localStorage.setItem("internbuddy-profile", JSON.stringify(cleanedUser));
 
   return cleanedUser;
 }
@@ -425,35 +367,29 @@ function updateStoredUser(updatedUser){
   localStorage.setItem("internbuddy_users", JSON.stringify(updatedUsers));
 }
 
-function redirectAfterLogin(user){
-  const needsSponsorship = userNeedsSponsorship(user);
-
-  if(needsSponsorship){
-    localStorage.setItem("internbuddy_redirect_reason", "sponsorship");
-    return SPONSORSHIP_PAGE;
-  }
-
-  localStorage.setItem("internbuddy_redirect_reason", "normal");
-  return DEFAULT_PAGE;
-}
-
 function loginUser(user){
   const activeUser = saveActiveUser(user);
   updateStoredUser(activeUser);
 
-  const targetPage = redirectAfterLogin(activeUser);
+  /*
+    Always send user to the main homepage.
+    Homepage can then show sponsorship pop-up/content based on activeUser.needsSponsorship.
+  */
+  localStorage.setItem("internbuddy_redirect_reason", "homepage");
 
-  if(targetPage === SPONSORSHIP_PAGE){
-    showSuccess("Login successful. Opening sponsorship jobs...");
-  }else{
-    showSuccess("Login successful. Redirecting...");
-  }
+  /*
+    This allows the sponsorship popup to show again after a fresh login.
+    Remove this line if you only want the popup once per browser session.
+  */
+  sessionStorage.removeItem("internbuddy_sponsor_popup_seen");
+
+  showSuccess("Login successful. Opening homepage...");
 
   loginBtn.disabled = true;
   loginBtn.textContent = "Logging in...";
 
   setTimeout(function(){
-    window.location.href = targetPage;
+    window.location.href = DEFAULT_PAGE;
   }, 850);
 }
 
@@ -488,8 +424,11 @@ loginForm.addEventListener("submit", function(e){
       accountType: "Demo Student",
       sponsorshipStatus: "no_sponsorship",
       needsSponsorship: false,
+      workAuth: "no_sponsorship",
       university: "Demo University",
-      course: "Computer Science"
+      course: "Computer Science",
+      studyField: "Computer Science",
+      locations: "United Kingdom"
     };
 
     loginUser(demoUser);

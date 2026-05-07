@@ -1,99 +1,570 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InternBuddy | Interview Prep</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/interview.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>InternBuddy | Interview Prep</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#4A90E2;
+  --accent-hover:#357abf;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --soft-card:rgba(255,255,255,0.055);
+  --shadow:rgba(0,0,0,.18);
+  --success:#20c997;
+  --danger:#ff6b6b;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,
+body{
+  min-height:100%;
+}
+
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+  padding-bottom:80px;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity:.07;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Header */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  color:var(--accent);
+  cursor:pointer;
+  user-select:none;
+}
+
+.logo-dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:3px;
+  vertical-align:middle;
+}
+
+nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+nav a{
+  color:var(--text);
+  text-decoration:none;
+  font-weight:500;
+  transition:color .2s, background .2s;
+  padding:8px 12px;
+  border-radius:8px;
+}
+
+nav a:hover{
+  color:var(--accent);
+  background:#fff;
+}
+
+/* Layout */
+main{
+  max-width:1100px;
+  margin:0 auto;
+  padding:60px 20px 40px;
+  position:relative;
+  z-index:1;
+}
+
+.hero-card{
+  background:var(--card-bg);
+  border-radius:24px;
+  padding:34px 30px;
+  box-shadow:0 8px 30px rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,0.06);
+  margin-bottom:26px;
+}
+
+.kicker{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+
+.hero-card h1{
+  font-size:38px;
+  line-height:1.08;
+  margin-bottom:12px;
+}
+
+.hero-card p{
+  font-size:16px;
+  color:var(--muted);
+  max-width:720px;
+  line-height:1.6;
+}
+
+.content-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);
+  gap:24px;
+}
+
+.card{
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 4px 16px var(--shadow);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.card h2{
+  font-size:22px;
+  margin-bottom:8px;
+}
+
+.card-sub{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.55;
+  margin-bottom:22px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.field{
+  min-width:0;
+}
+
+.label{
+  display:block;
+  font-size:13px;
+  color:#fff;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.select,
+.input{
+  width:100%;
+  padding:13px 14px;
+  background:rgba(34,34,40,0.7);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  font-family:inherit;
+}
+
+.select:focus,
+.input:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.select option{
+  color:#111;
+  background:#fff;
+  font-weight:600;
+}
+
+.segmented{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.seg{
+  padding:13px 14px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.055);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  transition:.18s ease;
+  font-family:inherit;
+}
+
+.seg:hover{
+  background:rgba(255,255,255,0.10);
+}
+
+.seg.on{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:12px;
+  margin-top:24px;
+}
+
+.btn{
+  border:none;
+  border-radius:10px;
+  padding:13px 18px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:15px;
+  font-family:inherit;
+  transition:background .2s, transform .15s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn.primary{
+  background:var(--accent);
+  color:#fff;
+}
+
+.btn.primary:hover{
+  background:var(--accent-hover);
+}
+
+.btn.secondary{
+  background:transparent;
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+}
+
+.btn.secondary:hover{
+  background:rgba(255,255,255,0.08);
+}
+
+#status{
+  margin-top:16px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:rgba(74,144,226,0.12);
+  border:1px solid rgba(74,144,226,0.32);
+  color:#dbeafe;
+  font-size:14px;
+  line-height:1.45;
+}
+
+/* Side panel */
+.info-panel{
+  background:linear-gradient(135deg, rgba(74,144,226,0.18), rgba(255,64,129,0.12));
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 4px 16px var(--shadow);
+}
+
+.info-panel h2{
+  font-size:22px;
+  margin-bottom:10px;
+}
+
+.info-panel p{
+  color:#ddd;
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:16px;
+}
+
+.steps{
+  display:grid;
+  gap:10px;
+  margin-top:16px;
+}
+
+.step{
+  padding:13px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.065);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.step strong{
+  display:block;
+  margin-bottom:4px;
+  color:#fff;
+}
+
+.step span{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
+
+/* Terms bar */
+.terms-bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:20;
+  padding:12px 10px;
+  background:rgba(17,17,17,0.78);
+  backdrop-filter:blur(10px);
+  border-top:1px solid rgba(255,255,255,0.10);
+  text-align:center;
+  font-weight:700;
+}
+
+.terms-bar a{
+  color:#1e90ff;
+  text-decoration:none;
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(74,144,226,0.14);
+  border:1px solid rgba(74,144,226,0.45);
+  transition:.18s ease;
+}
+
+.terms-bar a:hover{
+  background:#fff;
+  color:var(--accent);
+}
+
+/* Mobile */
+@media(max-width:900px){
+  main{
+    padding:36px 14px 36px;
+  }
+
+  .content-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero-card{
+    padding:28px 20px;
+  }
+
+  .hero-card h1{
+    font-size:32px;
+  }
+}
+
+@media(max-width:650px){
+  header{
+    padding:16px 10px;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .logo{
+    font-size:20px;
+  }
+
+  nav{
+    gap:4px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  nav a{
+    padding:7px 8px;
+    font-size:13px;
+  }
+
+  .card,
+  .info-panel{
+    padding:22px 16px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .row{
+    flex-direction:column;
+  }
+
+  .btn{
+    width:100%;
+  }
+}
+</style>
 </head>
+
 <body>
-  <div class="hero">
-    <div class="particles" id="particles"></div>
 
-    <header>
-      <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
-      <nav>
-        <a href="homepage.html">Dashboard</a>
-        <a href="edit-profile.html">Profile</a>
-        <a href="index.html">Logout</a>
-      </nav>
-    </header>
+<header>
+  <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
+  <nav>
+    <a href="homepage.html">Dashboard</a>
+    <a href="edit-profile.html">Profile</a>
+    <a href="index.html">Logout</a>
+  </nav>
+</header>
 
-    <div class="container">
-      <div class="top">
-        <h1>Interview Prep</h1>
-        <p>Choose your coach + interview settings, then start the mock interview.</p>
-      </div>
+<main>
+  <section class="hero-card">
+    <div class="kicker">Mock interview cockpit</div>
+    <h1>Interview Prep</h1>
+    <p>
+      Choose your coach, interview level and question type. InternBuddy will start a mock interview session
+      so you can practise answers and improve before the real thing.
+    </p>
+  </section>
 
-      <div class="card">
-        <div class="grid">
-          <div>
-            <div class="label">Coach (Male/Female)</div>
-            <div class="segmented">
-              <button class="seg on" type="button" data-gender="male">Male</button>
-              <button class="seg" type="button" data-gender="female">Female</button>
-            </div>
-          </div>
+  <section class="content-grid">
+    <div class="card">
+      <h2>Set up your interview</h2>
+      <p class="card-sub">Pick the style of coaching you want, then start your mock interview session.</p>
 
-          <div>
-            <div class="label">Coach style</div>
-            <select class="select" id="coachStyle">
-              <option value="Supportive Coach">Supportive Coach</option>
-              <option value="Strict Coach">Strict Coach</option>
-              <option value="Friendly Coach">Friendly Coach</option>
-              <option value="Tech Interviewer">Tech Interviewer</option>
-            </select>
-          </div>
-
-          <div>
-            <div class="label">Level</div>
-            <select class="select" id="level">
-              <option value="Intern">Intern</option>
-              <option value="Junior">Junior</option>
-            </select>
-          </div>
-
-          <div>
-            <div class="label">Question type</div>
-            <select class="select" id="type">
-              <option value="Behavioral">Behavioral</option>
-              <option value="Technical">Technical</option>
-              <option value="Motivation">Motivation</option>
-              <option value="Communication">Communication</option>
-              <option value="Product">Product</option>
-            </select>
-          </div>
-
-          <div>
-            <div class="label">Role (optional)</div>
-            <input class="input" id="role" placeholder="e.g., Software Engineering Intern" />
-          </div>
-
-          <div>
-            <div class="label">Rounds</div>
-            <select class="select" id="rounds">
-              <option value="5">5 questions</option>
-              <option value="8">8 questions</option>
-              <option value="10">10 questions</option>
-            </select>
+      <div class="grid">
+        <div class="field">
+          <div class="label">Coach</div>
+          <div class="segmented">
+            <button class="seg on" type="button" data-gender="male">Male</button>
+            <button class="seg" type="button" data-gender="female">Female</button>
           </div>
         </div>
 
-        <div class="row">
-          <button class="btn secondary" id="healthBtn" type="button">Test backend</button>
-          <button class="btn primary" id="startBtn" type="button">Start mock interview</button>
+        <div class="field">
+          <label class="label" for="coachStyle">Coach style</label>
+          <select class="select" id="coachStyle">
+            <option value="Supportive Coach">Supportive Coach</option>
+            <option value="Strict Coach">Strict Coach</option>
+            <option value="Friendly Coach">Friendly Coach</option>
+            <option value="Tech Interviewer">Tech Interviewer</option>
+          </select>
         </div>
 
-        <div id="status" style="margin-top:14px;">Ready.</div>
+        <div class="field">
+          <label class="label" for="level">Level</label>
+          <select class="select" id="level">
+            <option value="Intern">Intern</option>
+            <option value="Junior">Junior</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="type">Question type</label>
+          <select class="select" id="type">
+            <option value="Behavioral">Behavioral</option>
+            <option value="Technical">Technical</option>
+            <option value="Motivation">Motivation</option>
+            <option value="Communication">Communication</option>
+            <option value="Product">Product</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="role">Role</label>
+          <input class="input" id="role" placeholder="e.g., Software Engineering Intern" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="rounds">Rounds</label>
+          <select class="select" id="rounds">
+            <option value="5">5 questions</option>
+            <option value="8">8 questions</option>
+            <option value="10">10 questions</option>
+          </select>
+        </div>
       </div>
+
+      <div class="row">
+        <button class="btn secondary" id="healthBtn" type="button">Test backend</button>
+        <button class="btn primary" id="startBtn" type="button">Start mock interview</button>
+      </div>
+
+      <div id="status">Ready.</div>
     </div>
 
-    <div class="terms-bar">
-      <a href="terms-and-conditions.html">Terms and Conditions</a>
-    </div>
-  </div>
+    <aside class="info-panel">
+      <h2>How it works</h2>
+      <p>
+        Your mock interview is designed to feel structured and useful. Choose the kind of questions you want,
+        then use the session to practise clear, confident answers.
+      </p>
 
-  <script src="/interview.js"></script>
+      <div class="steps">
+        <div class="step">
+          <strong>1. Pick your setup</strong>
+          <span>Choose coach style, level, question type and number of rounds.</span>
+        </div>
+
+        <div class="step">
+          <strong>2. Start the session</strong>
+          <span>InternBuddy opens the mock interview flow with your selected settings.</span>
+        </div>
+
+        <div class="step">
+          <strong>3. Improve your answers</strong>
+          <span>Use feedback to make your answers stronger and more interview-ready.</span>
+        </div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<div class="terms-bar">
+  <a href="terms-and-conditions.html">Terms and Conditions</a>
+</div>
+
+<script src="interview.js"></script>
+
+<script>
+document.getElementById("homeLogo").addEventListener("click", function(){
+  window.location.href = "homepage.html";
+});
+
+/* Coach button UI state */
+document.querySelectorAll(".seg").forEach(function(button){
+  button.addEventListener("click", function(){
+    document.querySelectorAll(".seg").forEach(btn => btn.classList.remove("on"));
+    button.classList.add("on");
+  });
+});
+</script>
+
 </body>
 </html>

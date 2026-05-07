@@ -1,82 +1,575 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InternBuddy | Mock Interview</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/interview.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>InternBuddy | Mock Interview</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --accent:#4A90E2;
+  --accent-hover:#357abf;
+  --dot:#FF4081;
+  --text:#fff;
+  --muted:#bbb;
+  --border:#444;
+  --card-bg:rgba(34,34,40,0.92);
+  --soft-card:rgba(255,255,255,0.055);
+  --shadow:rgba(0,0,0,.18);
+  --success:#20c997;
+  --danger:#ff6b6b;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,
+body{
+  min-height:100%;
+}
+
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:linear-gradient(120deg, #232526 0%, #3a6186 50%, #89253e 100%);
+  color:var(--text);
+  min-height:100vh;
+  position:relative;
+  padding-bottom:80px;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:url('https://www.transparenttextures.com/patterns/diamond-upholstery.png');
+  opacity:.07;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Header */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 40px;
+  background:#111;
+  box-shadow:0 1px 3px var(--shadow);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-.5px;
+  color:var(--accent);
+  cursor:pointer;
+  user-select:none;
+}
+
+.logo-dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  background:var(--dot);
+  border-radius:50%;
+  margin-left:3px;
+  vertical-align:middle;
+}
+
+nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+nav a{
+  color:var(--text);
+  text-decoration:none;
+  font-weight:500;
+  transition:color .2s, background .2s;
+  padding:8px 12px;
+  border-radius:8px;
+}
+
+nav a:hover{
+  color:var(--accent);
+  background:#fff;
+}
+
+/* Layout */
+main{
+  max-width:1150px;
+  margin:0 auto;
+  padding:60px 20px 40px;
+  position:relative;
+  z-index:1;
+}
+
+.hero-card{
+  background:var(--card-bg);
+  border-radius:24px;
+  padding:34px 30px;
+  box-shadow:0 8px 30px rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,0.06);
+  margin-bottom:26px;
+}
+
+.kicker{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+
+.hero-card h1{
+  font-size:38px;
+  line-height:1.08;
+  margin-bottom:12px;
+}
+
+.hero-card p{
+  font-size:16px;
+  color:var(--muted);
+  max-width:760px;
+  line-height:1.6;
+}
+
+.panels{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  margin-bottom:24px;
+}
+
+.video-panel{
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 4px 16px var(--shadow);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.video-panel h3{
+  font-size:18px;
+  margin-bottom:14px;
+}
+
+.ai-portrait,
+#webcam{
+  width:100%;
+  height:360px;
+  border-radius:18px;
+  background:radial-gradient(circle at top left,#1f2933,#020617);
+  border:1px solid rgba(255,255,255,0.08);
+  overflow:hidden;
+  position:relative;
+  display:block;
+  object-fit:cover;
+}
+
+#avatarStage{
+  width:100%;
+  height:100%;
+}
+
+/* Voice bar */
+.voice-bar{
+  position:absolute;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  display:flex;
+  gap:5px;
+  align-items:flex-end;
+  height:34px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(0,0,0,0.38);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(8px);
+}
+
+.voice-bar span{
+  display:block;
+  width:5px;
+  height:18px;
+  border-radius:999px;
+  background:var(--accent);
+  animation:voiceMove .75s infinite ease-in-out;
+}
+
+.voice-bar span:nth-child(2){animation-delay:.08s;}
+.voice-bar span:nth-child(3){animation-delay:.16s;}
+.voice-bar span:nth-child(4){animation-delay:.24s;}
+.voice-bar span:nth-child(5){animation-delay:.32s;}
+
+.voice-bar.quiet span{
+  animation:none;
+  height:7px;
+  opacity:.55;
+}
+
+@keyframes voiceMove{
+  0%,100%{height:8px;}
+  50%{height:28px;}
+}
+
+/* Interview panel */
+.card{
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:28px;
+  box-shadow:0 4px 16px var(--shadow);
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+.interview-panel{
+  margin-bottom:30px;
+}
+
+#question{
+  font-size:20px;
+  line-height:1.45;
+  text-align:center;
+  padding:20px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:12px;
+  margin-top:18px;
+}
+
+.btn{
+  border:none;
+  border-radius:10px;
+  padding:13px 18px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:15px;
+  font-family:inherit;
+  transition:background .2s, transform .15s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.btn.primary{
+  background:var(--accent);
+  color:#fff;
+}
+
+.btn.primary:hover{
+  background:var(--accent-hover);
+}
+
+.btn.secondary{
+  background:transparent;
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.18);
+}
+
+.btn.secondary:hover{
+  background:rgba(255,255,255,0.08);
+}
+
+#status{
+  margin-top:16px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:rgba(74,144,226,0.12);
+  border:1px solid rgba(74,144,226,0.32);
+  color:#dbeafe;
+  font-size:14px;
+  line-height:1.45;
+  text-align:center;
+}
+
+.label{
+  display:block;
+  font-size:13px;
+  color:#fff;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+textarea{
+  width:100%;
+  min-height:120px;
+  resize:vertical;
+  padding:13px 14px;
+  background:rgba(34,34,40,0.7);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:#fff;
+  font-size:15px;
+  font-family:inherit;
+  line-height:1.5;
+}
+
+textarea:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+.feedbackWrap{
+  margin-top:22px;
+}
+
+.feedbackWrap h2{
+  text-align:center;
+  margin:16px 0 14px;
+  font-size:22px;
+}
+
+#feedback{
+  display:grid;
+  gap:14px;
+}
+
+.feedback-card{
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:18px;
+}
+
+.feedback-card h4{
+  font-size:16px;
+  line-height:1.45;
+  margin-bottom:10px;
+}
+
+.feedback-card p{
+  color:#ddd;
+  font-size:14px;
+  line-height:1.55;
+  margin-bottom:9px;
+}
+
+.feedback-card ul{
+  margin:8px 0 10px 20px;
+  color:#ddd;
+  font-size:14px;
+  line-height:1.55;
+}
+
+.badge{
+  display:inline-block;
+  margin-left:8px;
+  padding:4px 9px;
+  border-radius:999px;
+  background:rgba(74,144,226,0.16);
+  border:1px solid rgba(74,144,226,0.45);
+  color:#dbeafe;
+  font-size:12px;
+  font-weight:800;
+}
+
+/* Terms */
+.terms-bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:20;
+  padding:12px 10px;
+  background:rgba(17,17,17,0.78);
+  backdrop-filter:blur(10px);
+  border-top:1px solid rgba(255,255,255,0.10);
+  text-align:center;
+  font-weight:700;
+}
+
+.terms-bar a{
+  color:#1e90ff;
+  text-decoration:none;
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(74,144,226,0.14);
+  border:1px solid rgba(74,144,226,0.45);
+  transition:.18s ease;
+}
+
+.terms-bar a:hover{
+  background:#fff;
+  color:var(--accent);
+}
+
+/* Mobile */
+@media(max-width:900px){
+  main{
+    padding:36px 14px 36px;
+  }
+
+  .panels{
+    grid-template-columns:1fr;
+  }
+
+  .hero-card{
+    padding:28px 20px;
+  }
+
+  .hero-card h1{
+    font-size:32px;
+  }
+
+  .ai-portrait,
+  #webcam{
+    height:320px;
+  }
+}
+
+@media(max-width:650px){
+  header{
+    padding:16px 10px;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .logo{
+    font-size:20px;
+  }
+
+  nav{
+    gap:4px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  nav a{
+    padding:7px 8px;
+    font-size:13px;
+  }
+
+  .card,
+  .video-panel{
+    padding:18px 14px;
+  }
+
+  .hero-card h1{
+    font-size:29px;
+  }
+
+  .ai-portrait,
+  #webcam{
+    height:260px;
+  }
+
+  .row{
+    flex-direction:column;
+  }
+
+  .btn{
+    width:100%;
+  }
+}
+</style>
 </head>
+
 <body>
-  <div class="hero">
-    <div class="particles" id="particles"></div>
 
-    <header>
-      <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
-      <nav>
-        <a href="homepage.html">Dashboard</a>
-        <a href="interview-prep.html">Interview Prep</a>
-        <a href="index.html">Logout</a>
-      </nav>
-    </header>
+<header>
+  <div class="logo" id="homeLogo">InternBuddy<span class="logo-dot"></span></div>
+  <nav>
+    <a href="homepage.html">Dashboard</a>
+    <a href="interview-prep.html">Interview Prep</a>
+    <a href="index.html">Logout</a>
+  </nav>
+</header>
 
-    <div class="container">
-      <div class="top">
-        <h1>AI Mock Interview</h1>
-        <p>3D interviewer + realistic voice + “say this instead” coaching.</p>
-      </div>
+<main>
+  <section class="hero-card">
+    <div class="kicker">AI interview simulation</div>
+    <h1>AI Mock Interview</h1>
+    <p>
+      Practise with an AI interviewer, answer questions out loud, receive a score and get a stronger version of your answer.
+    </p>
+  </section>
 
-      <div class="panels">
-        <div class="video-panel">
-          <h3>AI Interviewer</h3>
-          <div class="ai-portrait" id="aiPortrait">
-            <div id="avatarStage" style="width:100%;height:100%"></div>
+  <section class="panels">
+    <div class="video-panel">
+      <h3>AI Interviewer</h3>
 
-            <div class="voice-bar quiet" id="voiceBar">
-              <span></span><span></span><span></span><span></span><span></span>
-            </div>
-          </div>
-        </div>
+      <div class="ai-portrait" id="aiPortrait">
+        <div id="avatarStage"></div>
 
-        <div class="video-panel">
-          <h3>Your Camera</h3>
-          <!-- ✅ muted stops mic feedback -->
-          <video id="webcam" autoplay playsinline muted></video>
-        </div>
-      </div>
-
-      <div class="card interview-panel">
-        <div id="question">Click “Start Interview” to begin.</div>
-
-        <div class="row" style="justify-content:center;margin-top:14px;">
-          <button class="btn primary" id="startBtn" type="button">Start Interview</button>
-          <button class="btn secondary" id="stopBtn" type="button" disabled>Stop Listening</button>
-          <button class="btn secondary" id="nextBtn" type="button" disabled>Next Question</button>
-        </div>
-
-        <div id="status">Ready.</div>
-
-        <div style="margin-top:14px;">
-          <div class="label">Transcript (what you said)</div>
-          <textarea id="transcript" placeholder="Your speech transcript will appear here..."></textarea>
-        </div>
-
-        <div class="feedbackWrap">
-          <h2 style="text-align:center;margin:16px 0 10px;">AI Feedback</h2>
-          <div id="feedback"></div>
+        <div class="voice-bar quiet" id="voiceBar">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
     </div>
 
-    <div class="terms-bar">
-      <a href="terms-and-conditions.html">Terms and Conditions</a>
+    <div class="video-panel">
+      <h3>Your Camera</h3>
+      <video id="webcam" autoplay playsinline muted></video>
     </div>
-  </div>
+  </section>
 
-  <!-- ✅ Classic scripts (more reliable locally) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+  <section class="card interview-panel">
+    <div id="question">Click “Start Interview” to begin.</div>
 
-  <script src="/interview.js"></script>
+    <div class="row">
+      <button class="btn primary" id="startBtn" type="button">Start Interview</button>
+      <button class="btn secondary" id="stopBtn" type="button" disabled>Stop Listening</button>
+      <button class="btn secondary" id="nextBtn" type="button" disabled>Next Question</button>
+    </div>
+
+    <div id="status">Ready.</div>
+
+    <div style="margin-top:18px;">
+      <div class="label">Transcript</div>
+      <textarea id="transcript" placeholder="Your speech transcript will appear here. You can also type or edit your answer before feedback is generated."></textarea>
+    </div>
+
+    <div class="feedbackWrap">
+      <h2>AI Feedback</h2>
+      <div id="feedback"></div>
+    </div>
+  </section>
+</main>
+
+<div class="terms-bar">
+  <a href="terms-and-conditions.html">Terms and Conditions</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script src="interview.js"></script>
+
+<script>
+document.getElementById("homeLogo").addEventListener("click", function(){
+  window.location.href = "homepage.html";
+});
+</script>
+
 </body>
 </html>
